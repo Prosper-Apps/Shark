@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include shark *.css
+recursive-include shark *.csv
+recursive-include shark *.html
+recursive-include shark *.ico
+recursive-include shark *.js
+recursive-include shark *.json
+recursive-include shark *.md
+recursive-include shark *.png
+recursive-include shark *.py
+recursive-include shark *.svg
+recursive-include shark *.txt
+recursive-exclude shark *.pyc
