@@ -15,37 +15,39 @@ import sys
 
 sum_data = []
 def execute(filters=None):
-    global sum_data
-    columns = []
-    sum_data = []
-    
-    data_rate = []
-    columns = get_columns()
-    po_details = fetching_po_details(filters)
-    for po_data in po_details:
-	    ordered_qty = po_data["ordered_qty"]
-	    delivered_qty = po_data["delivered_qty"]
-	    pending_qty =ordered_qty - delivered_qty
-	    actual_qty = po_data['qty']
-	    item_code = po_data['item_code']
-	    Shortage_Qty=actual_qty -pending_qty
-	    if pending_qty > 0  and actual_qty>0:
-	        data_rate.append(item_code)
-	        if item_code   in data_rate and actual_qty > 0:
-	            sum_data.append([ po_data['item_code'],po_data['item_name'], po_data['ordered_qty'],
-	                po_data['delivered_qty'], pending_qty, po_data['warehouse'],actual_qty,Shortage_Qty,
-	                po_data['stock_qty'], po_data['stock_uom'], po_data['supplier'],   po_data['rate']
-	                ])
-	    else:
-	        if actual_qty==0:
-	            if item_code  not in data_rate :
-	                data_rate.append(item_code)
-	                sum_data.append([ po_data['item_code'],po_data['item_name'], po_data['ordered_qty'],
-	                    po_data['delivered_qty'], pending_qty,"",actual_qty,Shortage_Qty,
-	                    po_data['stock_qty'], po_data['stock_uom'], po_data['supplier'],   po_data['rate']
-	                    ])
+	global sum_data
+	columns = []
+	sum_data = []
 
-    return columns, sum_data
+	data_rate = []
+	columns = get_columns()
+	po_details = fetching_po_details(filters)
+	for po_data in po_details:
+		ordered_qty = po_data["ordered_qty"]
+		delivered_qty = po_data["delivered_qty"]
+		pending_qty =ordered_qty - delivered_qty
+		actual_qty = po_data['qty']
+		item_code = po_data['item_code']
+		Shortage_Qty=actual_qty -pending_qty
+		if pending_qty > 0  and actual_qty>0:
+			data_rate.append(item_code)
+			print("entrerd in if")
+			if item_code   in data_rate and actual_qty > 0:
+				sum_data.append([ po_data['item_code'],po_data['item_name'], po_data['ordered_qty'],
+					po_data['delivered_qty'], pending_qty, po_data['warehouse'],actual_qty,Shortage_Qty,
+					po_data['stock_qty'], po_data['stock_uom'], po_data['supplier'],   po_data['rate']
+					])
+		else:
+			print("entrerd in else")
+			if actual_qty==0:
+				if item_code  not in data_rate :
+					data_rate.append(item_code)
+					sum_data.append([ po_data['item_code'],po_data['item_name'], po_data['ordered_qty'],
+						po_data['delivered_qty'], pending_qty,"",actual_qty,Shortage_Qty,
+						po_data['stock_qty'], po_data['stock_uom'], po_data['supplier'],   po_data['rate']
+						])
+	print("sum_data",sum_data)
+	return columns, sum_data
 
 @frappe.whitelist()
 def fetch_so_list(master_customer):
@@ -59,14 +61,14 @@ def fetch_so_list(master_customer):
 
 def fetching_po_details(filters):
 	condition = get_conditions(filters)
-	po_data = frappe.db.sql("""select
-					tso.name,tsoi.item_code,tsoi.qty as ordered_qty,tsoi.stock_uom as stock_uom, tsoi.delivered_qty,
-					tsoi.warehouse as warehouse, tsoi.rate as rate,tsoi.supplier as supplier,tsoi.stock_qty,tb.warehouse,
-										tb.actual_qty as qty,tsoi.item_name
-			from
-				`tabSales Order` tso,`tabSales Order Item` tsoi,`tabBin` tb
-			where
-				tso.name=tsoi.parent and tso.docstatus=1 and tsoi.item_code = tb.item_code and tso.name in %s""" % condition, as_dict=1)
+	po_data = frappe.db.sql("""SELECT sq.item_code,sq.ordered_qty,sq.stock_uom,
+	sq.delivered_qty,sq.rate,sq.supplier,sq.warehouse,sq.stock_qty,sq.item_name,
+	tb.warehouse,tb.actual_qty as qty FROM `tabBin` tb ,
+	(select tso.name,tsoi.item_code,tsoi.qty as ordered_qty,tsoi.stock_uom as stock_uom,
+	tsoi.delivered_qty,tsoi.warehouse as warehouse,tsoi.supplier as supplier,tsoi.rate as rate,
+	tsoi.stock_qty,tsoi.item_name from `tabSales Order` tso,`tabSales Order Item` tsoi 
+	where tso.name=tsoi.parent and tso.docstatus=0  and tso.name in %s) as sq
+	WHERE tb.item_code=sq.item_code order by tb.item_code """ % condition, as_dict=1)
 	print("po_data",po_data)
 	return po_data
 

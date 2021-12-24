@@ -33,7 +33,7 @@ def execute(filters=None):
 	        data_rate.append(item_code)
 	        if item_code in data_rate and actual_qty > 0:
 	            sum_data.append([ po_data['item_code'],po_data['item_name'], po_data['ordered_qty'],
-	                po_data['delivered_qty'], pending_qty, po_data['warehouse'],actual_qty,Shortage_Qty,
+	                po_data['delivered_qty'], pending_qty,actual_qty,Shortage_Qty,
 	                po_data['stock_qty'], po_data['stock_uom'], po_data['supplier'],   po_data['rate']
 	                ])
 	    else:
@@ -41,7 +41,7 @@ def execute(filters=None):
 	            if item_code  not in data_rate :
 	                data_rate.append(item_code)
 	                sum_data.append([ po_data['item_code'],po_data['item_name'], po_data['ordered_qty'],
-	                    po_data['delivered_qty'], pending_qty,"",actual_qty,Shortage_Qty,
+	                    po_data['delivered_qty'], pending_qty,actual_qty,Shortage_Qty,
 	                    po_data['stock_qty'], po_data['stock_uom'], po_data['supplier'],   po_data['rate']
 	                    ])
 
@@ -59,14 +59,18 @@ def fetch_so_list(master_customer):
 
 def fetching_po_details(filters):
 	condition = get_conditions(filters)
-	po_data = frappe.db.sql("""select tsoi.item_code,sum(tsoi.qty) as ordered_qty,tsoi.stock_uom as stock_uom, 
-	tsoi.delivered_qty,tsoi.warehouse as warehouse, tsoi.rate as rate,
-	tsoi.supplier as supplier,tsoi.stock_qty,sum(tb.actual_qty) as qty,
-	tsoi.item_name 
-	from `tabSales Order` tso,`tabSales Order Item` tsoi,`tabBin` tb 
-	where tso.name=tsoi.parent and tso.docstatus=1
-	and tsoi.item_code = tb.item_code 
-	and tso.name in %s group by tsoi.item_code""" % condition, as_dict=1)
+	po_data = frappe.db.sql("""SELECT sq.item_code,sq.ordered_qty,sq.stock_uom,sq.delivered_qty,
+	sq.rate,sq.supplier,sq.stock_qty,sq.item_name,sum(tb.actual_qty) as qty 
+	FROM `tabBin` tb ,
+	(select tso.name,tsoi.item_code,sum(tsoi.qty) as ordered_qty,
+	tsoi.stock_uom as stock_uom,tsoi.delivered_qty,tsoi.warehouse as warehouse,
+	tsoi.supplier as supplier,tsoi.rate as rate,tsoi.stock_qty,tsoi.item_name 
+	from `tabSales Order` tso,`tabSales Order Item` tsoi 
+	where tso.name=tsoi.parent and tso.docstatus=0  
+	and tso.name in %s 
+	group by tsoi.item_code) as sq 
+	WHERE tb.item_code=sq.item_code 
+	group by tb.item_code""" % condition, as_dict=1)
 	return po_data
 
 
@@ -79,7 +83,6 @@ def get_columns():
 		_("Quantity")+":100",
 		_("Delivered Quantity")+"::100",
 		_("Pending Quantity")+"::100",
-		_("Warehouse")+":Link/Warehouse:100",
 		_("Available Qty")+"::100",
 		_("Shortage/Excess Qty")+"::100",
 		 ]
