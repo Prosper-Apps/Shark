@@ -66,7 +66,7 @@ def fetching_po_details(filters):
 	tsoi.stock_uom as stock_uom,tsoi.delivered_qty,tsoi.warehouse as warehouse,
 	tsoi.supplier as supplier,tsoi.rate as rate,tsoi.stock_qty,tsoi.item_name 
 	from `tabSales Order` tso,`tabSales Order Item` tsoi 
-	where tso.name=tsoi.parent and tso.docstatus=0  
+	where tso.name=tsoi.parent and tso.docstatus=1  
 	and tso.name in %s 
 	group by tsoi.item_code) as sq 
 	WHERE tb.item_code=sq.item_code 

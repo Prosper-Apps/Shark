@@ -67,7 +67,7 @@ def fetching_po_details(filters):
 	(select tso.name,tsoi.item_code,tsoi.qty as ordered_qty,tsoi.stock_uom as stock_uom,
 	tsoi.delivered_qty,tsoi.warehouse as warehouse,tsoi.supplier as supplier,tsoi.rate as rate,
 	tsoi.stock_qty,tsoi.item_name from `tabSales Order` tso,`tabSales Order Item` tsoi 
-	where tso.name=tsoi.parent and tso.docstatus=0  and tso.name in %s) as sq
+	where tso.name=tsoi.parent and tso.docstatus=1  and tso.name in %s) as sq
 	WHERE tb.item_code=sq.item_code order by tb.item_code """ % condition, as_dict=1)
 	print("po_data",po_data)
 	return po_data
