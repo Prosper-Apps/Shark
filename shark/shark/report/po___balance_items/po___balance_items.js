@@ -25,7 +25,7 @@ frappe.query_reports["PO - Balance Items"] = {
 			"label": __("Status"),
 			"fieldtype": "Select",
 			//"reqd": 1,
-			"options": ["Draft", "To Deliver and Bill"],
+			"options": ["","Draft","Completed","To Bill","To Receive and Bill"],
 			
 		},
 		{

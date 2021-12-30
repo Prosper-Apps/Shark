@@ -28,6 +28,7 @@ def execute(filters=None):
 		sum_data.append([po_list_data.date.strftime("%d-%m-%Y"),
 		po_list_data.name,po_list_data.supplier,
 		po_list_data.project,po_list_data.item_code,
+		po_list_data.stock_uom,
 		po_list_data.quantity,po_list_data.received_qty,
 		po_list_data.balance_qty,po_list_data.status])
 	#print("sum_data",sum_data)
@@ -36,8 +37,8 @@ def execute(filters=None):
 def fetching_po_details(filters):
 	condition = get_conditions(filters)
 	po_data = frappe.db.sql("""select po.name,po.transaction_date as date,
-	po.supplier,poi.project,poi.item_group,poi.qty as quantity,poi.stock_qty as balance_qty,
-	poi.received_qty,poi.item_code,po.status
+	po.supplier,poi.project,poi.item_group,poi.stock_qty as quantity,(poi.stock_qty-poi.received_qty) as balance_qty,
+	poi.received_qty,poi.item_code,po.status,poi.stock_uom
 	from 
 	`tabPurchase Order` po,`tabPurchase Order Item` poi 
 	where po.name=poi.parent and po.docstatus!=2 
@@ -53,6 +54,7 @@ def get_columns():
 			_("Supplier")+":Link/Supplier:150",
 			_("Project")+":Link/Project:150",
 			_("Item Code")+":Link/Item:200",
+			_("UOM")+":Link/UOM:100",
 			_("Quantity")+"::80",
 			_("Received Qty")+"::100",
 			_("Balance Qty")+"::100",
