@@ -1,7 +1,8 @@
-// Copyright (c) 2018, Frappe Technologies Pvt. Ltd. and Contributors
-// License: GNU General Public License v3. See license.txt
+// Copyright (c) 2016, jyoti and contributors
+// For license information, please see license.txt
+/* eslint-disable */
 
-frappe.query_reports["GLedger"] = {
+frappe.query_reports["Shark General Ledger"] = {
 	"filters": [
 		{
 			"fieldname":"company",
@@ -214,3 +215,4 @@ frappe.query_reports["GLedger"] = {
 		}
 	]
 }
+
