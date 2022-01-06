@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 from __future__ import unicode_literals
+from __future__ import division
 import frappe
 from frappe import _, msgprint
 from frappe.utils import flt, getdate, comma_and
@@ -12,6 +13,7 @@ import math
 import json
 import ast
 import sys
+
 
 sum_data = []
 def execute(filters=None):
@@ -29,21 +31,36 @@ def execute(filters=None):
 		po_list_data.name,po_list_data.supplier,
 		po_list_data.project,po_list_data.item_code,
 		po_list_data.stock_uom,
-		po_list_data.quantity,po_list_data.received_qty,
-		po_list_data.balance_qty,po_list_data.status])
+		po_list_data.quantity,po_list_data.test_qty,
+		(po_list_data.quantity-po_list_data.test_qty),po_list_data.status])
 	#print("sum_data",sum_data)
 	return columns, sum_data
 
 def fetching_po_details(filters):
 	condition = get_conditions(filters)
 	po_data = frappe.db.sql("""select po.name,po.transaction_date as date,
-	po.supplier,poi.project,poi.item_group,poi.stock_qty as quantity,(poi.stock_qty-poi.received_qty) as balance_qty,
-	poi.received_qty,poi.item_code,po.status,poi.stock_uom
+	po.supplier,poi.project,poi.item_group,poi.stock_qty as quantity,
+	poi.item_code,po.status,poi.stock_uom
 	from 
 	`tabPurchase Order` po,`tabPurchase Order Item` poi 
 	where po.name=poi.parent and po.docstatus!=2 
 	%s """ %
 		condition, as_dict=1)
+	#print("po_data",po_data)
+	for data in po_data:
+		#print("data.name",data)
+		test_qty=frappe.db.sql("""select sum(received_stock_qty) as test_qty from `tabPurchase Receipt Item` 
+		where purchase_order='"""+data.name+"""' order by item_code""", as_dict=1)
+		#print("test_qty",test_qty)
+		if test_qty[0].test_qty is not None:
+			#print("enterd in if")
+			data["test_qty"]=test_qty[0].test_qty
+			
+		else:
+			#print("enterd in else")
+			data["test_qty"]=0
+			
+	#print("po_data after",po_data)
 	return po_data
 
 def get_columns():
