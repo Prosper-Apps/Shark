@@ -31,8 +31,8 @@ def execute(filters=None):
 		po_list_data.name,po_list_data.supplier,
 		po_list_data.project,po_list_data.item_code,
 		po_list_data.stock_uom,
-		po_list_data.quantity,po_list_data.test_qty,
-		(po_list_data.quantity-po_list_data.test_qty),po_list_data.status])
+		po_list_data.quantity,po_list_data.received_qty,
+		(po_list_data.quantity-po_list_data.received_qty),po_list_data.status])
 	#print("sum_data",sum_data)
 	return columns, sum_data
 
@@ -46,21 +46,21 @@ def fetching_po_details(filters):
 	where po.name=poi.parent and po.docstatus!=2 
 	%s """ %
 		condition, as_dict=1)
-	#print("po_data",po_data)
+	print("po_data",po_data)
 	for data in po_data:
-		#print("data.name",data)
-		test_qty=frappe.db.sql("""select sum(received_stock_qty) as test_qty from `tabPurchase Receipt Item` 
+		print("data.name",data)
+		test_qty=frappe.db.sql("""select sum(received_stock_qty) as received_qty from `tabPurchase Receipt Item` 
 		where purchase_order='"""+data.name+"""' order by item_code""", as_dict=1)
-		#print("test_qty",test_qty)
-		if test_qty[0].test_qty is not None:
-			#print("enterd in if")
-			data["test_qty"]=test_qty[0].test_qty
+		print("test_qty",test_qty)
+		if test_qty[0].received_qty is not None:
+			print("enterd in if")
+			data["received_qty"]=test_qty[0].received_qty
 			
 		else:
-			#print("enterd in else")
-			data["test_qty"]=0
+			print("enterd in else")
+			data["received_qty"]=0
 			
-	#print("po_data after",po_data)
+	print("po_data after",po_data)
 	return po_data
 
 def get_columns():
