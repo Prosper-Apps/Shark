@@ -59,7 +59,7 @@ def execute(filters=None):
 			required_qty = (bom_item_qty/bom_qty) * (float(quantity_to_make))
 		else:
 			required_qty = 0
-		if warehouse is not None and warehouse is not "":
+		if warehouse is not None and warehouse !="":
 			whse_qty = get_warehouse_qty(warehouse,item_code)
 			whse_stock_entry_qty = get_stock_entry_quantities(warehouse,item_code,project_start_date)
 		else:
@@ -68,7 +68,7 @@ def execute(filters=None):
 
 		if whse_stock_entry_qty:
 			whse_qty = whse_qty + whse_stock_entry_qty
-		if reserve_warehouse is not None and reserve_warehouse is not "":
+		if reserve_warehouse is not None and reserve_warehouse!="":
 			reserved_whse_qty = get_warehouse_qty(reserve_warehouse,item_code)
 			reserved_whse_stock_entry_qty = get_stock_entry_quantities(reserve_warehouse,item_code,project_start_date)
 		else:
