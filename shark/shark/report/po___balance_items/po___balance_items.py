@@ -46,21 +46,21 @@ def fetching_po_details(filters):
 	where po.name=poi.parent and po.docstatus!=2 
 	%s """ %
 		condition, as_dict=1)
-	print("po_data",po_data)
+	#print("po_data",po_data)
 	for data in po_data:
-		print("data.name",data)
+		#print("data.name",data)
 		test_qty=frappe.db.sql("""select sum(received_stock_qty) as received_qty from `tabPurchase Receipt Item` 
-		where purchase_order='"""+data.name+"""' order by item_code""", as_dict=1)
-		print("test_qty",test_qty)
+		where purchase_order='"""+data.name+"""' group by item_code""", as_dict=1)
+		#print("test_qty",test_qty)
 		if test_qty[0].received_qty is not None:
-			print("enterd in if")
+			#print("enterd in if")
 			data["received_qty"]=test_qty[0].received_qty
 			
 		else:
-			print("enterd in else")
+			#print("enterd in else")
 			data["received_qty"]=0
 			
-	print("po_data after",po_data)
+	#print("po_data after",po_data)
 	return po_data
 
 def get_columns():
