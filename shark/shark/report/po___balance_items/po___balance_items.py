@@ -50,7 +50,7 @@ def fetching_po_details(filters):
 	for data in po_data:
 		#print("data.name",data)
 		test_qty=frappe.db.sql("""select sum(received_stock_qty) as received_qty from `tabPurchase Receipt Item` 
-		where purchase_order='"""+data.name+"""' group by item_code""", as_dict=1)
+		where purchase_order='"""+data.name+"""' and item_code='"""+data.item_code+"""' """, as_dict=1)
 		#print("test_qty",test_qty)
 		if len(test_qty)==0:
 			data["received_qty"]=0
