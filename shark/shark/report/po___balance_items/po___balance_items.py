@@ -52,7 +52,10 @@ def fetching_po_details(filters):
 		test_qty=frappe.db.sql("""select sum(received_stock_qty) as received_qty from `tabPurchase Receipt Item` 
 		where purchase_order='"""+data.name+"""' group by item_code""", as_dict=1)
 		#print("test_qty",test_qty)
-		if test_qty[0].received_qty is not None:
+		if len(test_qty)==0:
+			data["received_qty"]=0
+
+		elif (len(test_qty)!=0) and (test_qty[0].received_qty is not None):
 			#print("enterd in if")
 			data["received_qty"]=test_qty[0].received_qty
 			
