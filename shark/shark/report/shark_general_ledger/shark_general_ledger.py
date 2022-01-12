@@ -159,15 +159,8 @@ def get_gl_entries(filters):
 		if gl_data.voucher_type=="Stock Entry":
 			gl_data['remarks']=" "
 			gl_entries.append(gl_data)
-		if gl_data.voucher_type=="Purchase Invoice":
-			supplier_details=frappe.db.sql("""select bill_no,bill_date from `tabPurchase Invoice` 
-				where name='"""+gl_data.voucher_no+"""'""", as_dict=1)
-			gl_data['supplier_invoice_number']=supplier_details[0].bill_no
-			gl_data['supplier_invoice_date']=supplier_details[0].bill_date.strftime("%d.%m.%Y")
-    	
+		
 		else:
-			gl_data['supplier_invoice_number']=""
-			gl_data['supplier_invoice_date']=""
 			gl_entries.append(gl_data)
 	
 	if filters.get('presentation_currency'):
@@ -414,16 +407,6 @@ def get_columns(filters):
 		{
 			"label": _("Remarks"),
 			"fieldname": "remarks",
-			"width": 400
-		},
-		{
-			"label": _("Supplier Invoice Number"),
-			"fieldname": "supplier_invoice_number",
-			"width": 400
-		},  
-		{
-			"label": _("Supplier Invoice Date"),
-			"fieldname": "supplier_invoice_date",
 			"width": 400
 		}
 
