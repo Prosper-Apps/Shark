@@ -152,9 +152,12 @@ def get_gl_entries(filters):
 		filters, as_dict=1)
 	for gl_data in gl_entries_data:
 		if gl_data.voucher_type=="Payment Entry":
-			remark=frappe.db.sql("""select CONCAT(paid_to_account_currency," ",paid_amount," ",reference_no," ",reference_date) as remarks
+			remark=frappe.db.sql("""select CONCAT('Amount'," ",'Rs.',FLOOR(paid_amount),'/- ',",",'Chq No.'," ",reference_no," ",'Date'," ",DATE_FORMAT(reference_date,"%%d.%%m.%%y")) as remarks 
 			from `tabPayment Entry` where name='"""+gl_data.voucher_no+"""'""", as_dict=1)
 			gl_data['remarks']=remark[0].remarks
+			gl_entries.append(gl_data)
+		if gl_data.voucher_type=="Stock Entry":
+			gl_data['remarks']=" "
 			gl_entries.append(gl_data)
 		else:
 			gl_entries.append(gl_data)
@@ -369,14 +372,14 @@ def get_columns(filters):
 			"width": 120
 		},
 		{
-			"label": _("Voucher No"),
+			"label": _("Invoice No"),
 			"fieldname": "voucher_no",
 			"fieldtype": "Dynamic Link",
 			"options": "voucher_type",
 			"width": 180
 		},
 		{
-			"label": _("Account"),
+			"label": _("Against Account"),
 			"fieldname": "account",
 			"fieldtype": "Link",
 			"options": "Account",
