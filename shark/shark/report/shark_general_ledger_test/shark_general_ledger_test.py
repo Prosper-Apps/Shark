@@ -41,11 +41,21 @@ def execute(filters=None):
 	res = get_result(filters, account_details)
 	updated_res = []
 	for d in res:
-		d["supplier"] = " "
-		d["supplier_invoice_no"] = " "
-		d["supplier_invoice_date"] = " "
-		d["po_no"] = " "
-		updated_res.append(d)
+		if d.voucher_type=="Purchase Invoice":
+			invoice_data=frappe.db.sql("""select bill_no,bill_date,supplier_name
+			from `tabPurchase Invoice` where name='"""+d.voucher_no+"""'""", as_dict=1)
+			d["supplier"] = invoice_data[0].supplier_name
+			d["supplier_invoice_no"] = invoice_data[0].bill_no
+			d["supplier_invoice_date"] = invoice_data[0].bill_date
+			d["po_no"] = " "
+			updated_res.append(d)
+		else:
+			d["supplier"] = " "
+			d["supplier_invoice_no"] = " "
+			d["supplier_invoice_date"] = " "
+			d["po_no"] = " "
+			updated_res.append(d)
+
 	return columns, updated_res
 	
 
