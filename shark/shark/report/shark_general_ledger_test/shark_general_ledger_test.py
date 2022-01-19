@@ -39,8 +39,12 @@ def execute(filters=None):
 	columns = get_columns(filters)
 
 	res = get_result(filters, account_details)
-
-	return columns, res
+	
+	updated_res = []
+	for d in res:
+		d["supplier"] = "test"
+		updated_res.append(d)
+	return columns, updated_res
 
 
 def validate_filters(filters, account_details):
@@ -114,7 +118,7 @@ def get_result(filters, account_details):
 	data = get_data_with_opening_closing(filters, account_details, gl_entries)
 
 	result = get_result_as_list(data, filters)
-
+	print("result",result)
 	return result
 
 def get_gl_entries(filters):
@@ -152,20 +156,17 @@ def get_gl_entries(filters):
 		filters, as_dict=1)
 	for gl_data in gl_entries_data:
 		if gl_data.voucher_type=="Payment Entry":
-			remark=frappe.db.sql("""select CONCAT('Amount'," ",'Rs.',FLOOR(paid_amount),'/- ',",",'Chq No.'," ",reference_no," ",'Date'," ") as remarks,reference_date
+			remark=frappe.db.sql("""select CONCAT('Amount'," ",'Rs.',FLOOR(paid_amount),'/- ',",",'Chq No.'," ",reference_no," ",'Date'," ",DATE_FORMAT(reference_date,"%%d.%%m.%%y")) as remarks 
 			from `tabPayment Entry` where name='"""+gl_data.voucher_no+"""'""", as_dict=1)
-			gl_data['remarks']=remark[0].remarks+remark[0].reference_date.strftime("%d.%m.%Y")
+			gl_data['remarks']=remark[0].remarks
 			gl_entries.append(gl_data)
-		if gl_data.voucher_type=="Stock Entry":
-			gl_data['remarks']=" "
-			gl_entries.append(gl_data)
-		
 		else:
 			gl_entries.append(gl_data)
 	
 	if filters.get('presentation_currency'):
 		return convert_to_presentation_currency(gl_entries, currency_map)
 	else:
+		print("gl_entries",gl_entries)
 		return gl_entries
 
 
@@ -252,7 +253,7 @@ def get_data_with_opening_closing(filters, account_details, gl_entries):
 
 	# closing
 	data.append(totals.closing)
-
+	print("data",data)
 	return data
 
 def get_totals_dict():
@@ -373,14 +374,14 @@ def get_columns(filters):
 			"width": 120
 		},
 		{
-			"label": _("Invoice No"),
+			"label": _("Voucher No"),
 			"fieldname": "voucher_no",
 			"fieldtype": "Dynamic Link",
 			"options": "voucher_type",
 			"width": 180
 		},
 		{
-			"label": _("Against Account"),
+			"label": _("Account"),
 			"fieldname": "account",
 			"fieldtype": "Link",
 			"options": "Account",
@@ -408,8 +409,12 @@ def get_columns(filters):
 			"label": _("Remarks"),
 			"fieldname": "remarks",
 			"width": 400
+		},
+		{
+			"label": _("Supplier"),
+			"fieldname": "supplier",
+			"width": 100
 		}
-
 	]
 
 	return columns
