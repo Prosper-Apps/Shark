@@ -49,6 +49,14 @@ def execute(filters=None):
 			d["supplier_invoice_date"] = invoice_data[0].bill_date
 			d["po_no"] = " "
 			updated_res.append(d)
+		elif d.voucher_type=="Purchase Receipt":
+			receipt_data=frappe.db.sql("""select bill_no,bill_date,supplier_name
+			from `tabPurchase Receipt` where name='"""+d.voucher_no+"""'""", as_dict=1)
+			d["supplier"] = receipt_data[0].supplier_name
+			d["supplier_invoice_no"] = receipt_data[0].bill_no
+			d["supplier_invoice_date"] = receipt_data[0].bill_date
+			d["po_no"] = " "
+			updated_res.append(d)
 		else:
 			d["supplier"] = " "
 			d["supplier_invoice_no"] = " "
