@@ -43,18 +43,28 @@ def execute(filters=None):
 	for d in res:
 		if d.voucher_type=="Purchase Invoice":
 			invoice_data=frappe.db.sql("""select bill_no,bill_date,supplier_name
-			from `tabPurchase Invoice` where name='"""+d.voucher_no+"""'""", as_dict=1)	
+			from `tabPurchase Invoice` where name='"""+d.voucher_no+"""'""", as_dict=1)
+			po_number=frappe.db.sql("""select poi.name,pii.purchase_order 
+			from `tabPurchase Invoice` poi,`tabPurchase Invoice Item` pii 
+			where poi.name=pii.parent and poi.name='"""+d.voucher_no+"""'""", as_dict=1)
+
 			d["supplier"] = invoice_data[0].supplier_name
 			d["supplier_invoice_no"] = invoice_data[0].bill_no
-			d["supplier_invoice_date"] = invoice_data[0].bill_date.strftime("%d-%m-%Y")
-			d["po_no"] = ""
+			if invoice_data[0].bill_date is not None:
+				d["supplier_invoice_date"] = invoice_data[0].bill_date.strftime("%d-%m-%Y")
+			else:
+				d["supplier_invoice_date"] = invoice_data[0].bill_date
+			d["po_no"] = po_number[0]['purchase_order']
 			updated_res.append(d)
 		elif d.voucher_type=="Purchase Receipt":
 			receipt_data=frappe.db.sql("""select bill_no,bill_date,supplier_name
 			from `tabPurchase Receipt` where name='"""+d.voucher_no+"""'""", as_dict=1)
 			d["supplier"] = receipt_data[0].supplier_name
 			d["supplier_invoice_no"] = receipt_data[0].bill_no
-			d["supplier_invoice_date"] = receipt_data[0].bill_date.strftime("%d-%m-%Y")
+			if receipt_data[0].bill_date is not None:
+				d["supplier_invoice_date"] = receipt_data[0].bill_date.strftime("%d-%m-%Y")
+			else:
+				d["supplier_invoice_date"] = receipt_data[0].bill_date
 			d["po_no"] = " "
 			updated_res.append(d)
 		else:
