@@ -50,7 +50,7 @@ def execute(filters=None):
 			d["supplier"] = invoice_data[0].supplier_name
 			d["supplier_invoice_no"] = invoice_data[0].bill_no
 			d["supplier_invoice_date"] = invoice_data[0].bill_date.strftime("%d-%m-%Y")
-			d["po_no"] = po_number[0].purchase_order
+			d["po_no"] = po_number[0]['purchase_order']
 			updated_res.append(d)
 		elif d.voucher_type=="Purchase Receipt":
 			receipt_data=frappe.db.sql("""select bill_no,bill_date,supplier_name
