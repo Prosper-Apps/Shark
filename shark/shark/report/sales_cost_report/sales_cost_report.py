@@ -291,7 +291,7 @@ def get_conversion_factore(item_code,purchase_uom):
 	
 	return conversion
 def get_report_total_row():
-	total_row_checking = frappe.db.sql("""select add_total_row from `tabReport` where report_name = 'BOM-Cost-Report v2'""",as_dict =1)
+	total_row_checking = frappe.db.sql("""select add_total_row from `tabReport` where report_name = 'Sales Cost Report'""",as_dict =1)
 
 	return total_row_checking
 
