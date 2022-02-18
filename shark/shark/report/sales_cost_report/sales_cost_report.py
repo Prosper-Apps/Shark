@@ -33,8 +33,7 @@ def execute(filters=None):
 	  bom=frappe.db.get_value("BOM",{"item":sales_item_code,"is_default":1},"name")
 	  print("item_default_bom",bom)
 	  if bom is None:
-	    frappe.msgprint(" Item "+sales_item_code+" Does not have default BOM")
-	    
+	    frappe.msgprint(" Item "+sales_item_code+" does not have default BOM")
 	  if bom is not None:
 	    bom_item = bom_details(company ,bom)
 	    total_bom_qty = 0.0
@@ -127,7 +126,7 @@ def execute(filters=None):
 	          item_cost_based_on_valuation_rate = round(float(item_cost_based_on_valuation_rate),2)
 	        total_item_cost_based_on_valuation_rate += item_cost_based_on_valuation_rate
 	        total_item_cost_based_on_valuation_rate = round(float(total_item_cost_based_on_valuation_rate),2)
-	        purchase_rate = get_purchase_order_no(item_code)
+	        purchase_rate = get_sales_order_no(item_code)
 	        max_purchase = purchase_rate[0]['highest_rate']
 	        min_purchase = purchase_rate[0]['lowest_rate']
 	        avg_purchase = purchase_rate[0]['avg_rate']
@@ -214,31 +213,31 @@ def get_number_of_purchase(item_code):
 										count(parent) as num_of_purchase,avg(rate) as avg_purchase,MAX(rate) as max_purchase,
 										MIN(rate) as min_purchase
 								from
-										`tabPurchase Order Item`
+										`tabSales Order Item`
 								where
 										item_code = %s and docstatus = 1""",(item_code), as_dict=1)
 	return purchase
-def get_purchase_order_no(item_code):
+def get_sales_order_no(item_code):
 	#print "item code-------------------",item_code
 	purchase_name_count = 0
 	total_rate = 0.0
 	lowest_rate = 0.0
 	highest_rate = 0.0
 	avg_rate = 0.0
-	purchase_order_lha = []
-	purchase_order = frappe.db.sql("""select 
+	sales_order_lha = []
+	sales_order = frappe.db.sql("""select 
 						poi.item_code,poi.conversion_factor,poi.rate,poi.parent
 					from 
-						`tabPurchase Order Item` poi 
+						`tabSales Order Item` poi 
 					where 
 						poi.item_code = %s  and docstatus = 1
 						""",item_code, as_dict =1)
 
-	lowest_purchase_item_rate = frappe.db.sql("""SELECT parent,rate,item_code,conversion_factor from `tabPurchase Order Item`  where rate = (select min(rate) from `tabPurchase Order Item` where item_code = %s and docstatus =1) and item_code = %s and conversion_factor = (select max(conversion_factor) from `tabPurchase Order Item` where item_code = %s and docstatus =1) and docstatus =1""",(item_code,item_code,item_code), as_dict =1)
+	lowest_purchase_item_rate = frappe.db.sql("""SELECT parent,rate,item_code,conversion_factor from `tabSales Order Item`  where rate = (select min(rate) from `tabSales Order Item` where item_code = %s and docstatus =1) and item_code = %s and conversion_factor = (select max(conversion_factor) from `tabSales Order Item` where item_code = %s and docstatus =1) and docstatus =1""",(item_code,item_code,item_code), as_dict =1)
 
 	highest_purchase_item_rate = frappe.db.sql("""SELECT parent,rate,item_code,min(conversion_factor) as conversion_factor
-	from `tabPurchase Order Item`  
-	where rate = (select max(rate) from `tabPurchase Order Item` where item_code = %s and docstatus =1) 
+	from `tabSales Order Item`  
+	where rate = (select max(rate) from `tabSales Order Item` where item_code = %s and docstatus =1) 
 		and item_code = %s and docstatus =1""",(item_code,item_code), as_dict =1)
 	if highest_purchase_item_rate:
 		for highest in highest_purchase_item_rate:
@@ -251,8 +250,8 @@ def get_purchase_order_no(item_code):
 			if lowest.rate is not None and lowest.conversion_factor is not None:
 				lowest_rate = lowest.rate / lowest.conversion_factor
 	#print "lowest_rate--------------",lowest_rate
-	if purchase_order:
-		for purchase in purchase_order:
+	if sales_order:
+		for purchase in sales_order:
 			purchase_name_count = purchase_name_count + 1
 			conversion_factor = purchase.conversion_factor
 			rate = purchase.rate
@@ -264,15 +263,15 @@ def get_purchase_order_no(item_code):
 	lowest_rate = round(float(lowest_rate),2)
 	avg_rate = round(float(avg_rate),2)
 	purchase_name_count = round(float(purchase_name_count),2)
-	purchase_order_lha.append(
+	sales_order_lha.append(
 				{
 				"highest_rate":highest_rate,
 				"lowest_rate":lowest_rate,
 				"avg_rate":avg_rate,
 				"purchase_name_count":purchase_name_count
 				})
-	#print "purchase_order_lha------------",purchase_order_lha
-	return purchase_order_lha
+	
+	return sales_order_lha
 def get_stock_ledger_entry(item_code):
 	stock_entry = ""
 	stock_entry = frappe.db.sql(""" select  
