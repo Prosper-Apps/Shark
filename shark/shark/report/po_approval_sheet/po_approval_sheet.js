@@ -13,6 +13,7 @@ frappe.query_reports["Po Approval Sheet"] = {
             "label": __("Workflow Status"),
             "fieldname": "workflow_status",
             "fieldtype": "Select",
+            "reqd":1,
             "options": ["", "Draft",
                 "Ready for Approval",
                 "Approved By GM",
@@ -29,11 +30,11 @@ frappe.query_reports["Po Approval Sheet"] = {
             "fieldname": "po_status",
             "fieldtype": "Select",
             "options": ["", "Draft",
-                "Ready for Approval",
-                "Approved By GM",
-                "Being Modified",
-                "Approved",
-                "Rejected",
+                "To Bill",
+                "To Receive",
+                "To Receive and Bill",
+                "Closed",
+                "Completed",
                 "Cancelled"
             ],
 
@@ -41,8 +42,15 @@ frappe.query_reports["Po Approval Sheet"] = {
 
 
     ],
-
+    
     onload: function(report) {
+        let doc = frappe.query_report.report_name;
+        console.log("doc----",doc)
+        var date = frappe.query_report.get_filter_value('date');
+        console.log("date----",date)
+        var workflow_status = frappe.query_report.get_filter_value('workflow_status');
+        console.log("workflow_status----",workflow_status)
+        /*
         report.page.add_action_item(__("Ready for Approval"), function() {
 
             let checked_rows_indexes = report.datatable.rowmanager.getCheckedRows();
@@ -56,6 +64,7 @@ frappe.query_reports["Po Approval Sheet"] = {
                 if (po_number !== "") {
                     console.log("entered in if block")
                     ready_for_approval_po_number(po_number)
+                    
 
 
                 }
@@ -63,7 +72,7 @@ frappe.query_reports["Po Approval Sheet"] = {
 
         });
 
-
+*/
         report.page.add_action_item(__("Approve"), function() {
 
             let checked_rows_indexes = report.datatable.rowmanager.getCheckedRows();
@@ -73,10 +82,11 @@ frappe.query_reports["Po Approval Sheet"] = {
                 console.log("po number", checked_rows[i].po_number);
                 var po_number = checked_rows[i].po_number;
                 console.log(typeof po_number)
-
+                var doc=""
                 if (po_number !== "") {
                     console.log("entered in if block")
-                    approve_po_number(po_number)
+                    
+                   approve_po_number(po_number)
 
 
                 }
@@ -112,6 +122,20 @@ frappe.query_reports["Po Approval Sheet"] = {
                 }
             }
         });
+        report.page.add_action_item(__("Cancel"), function() {
+            let checked_rows_indexes = report.datatable.rowmanager.getCheckedRows();
+            let checked_rows = checked_rows_indexes.map(i => report.data[i]);
+            console.log("checked_rows", checked_rows)
+            for (var i = 0; i < checked_rows.length; ++i) {
+                console.log("po number", checked_rows[i].po_number);
+                var po_number = checked_rows[i].po_number;
+                console.log(typeof po_number)
+                if (po_number !== "") {
+                    console.log("entered in if block")
+                    cancel_po_number(po_number)
+                }
+            }
+        });
 
     },
     get_datatable_options(options) {
@@ -121,6 +145,7 @@ frappe.query_reports["Po Approval Sheet"] = {
     },
 
 };
+
 
 function ready_for_approval_po_number(po_number) {
     frappe.call({
@@ -137,6 +162,7 @@ function ready_for_approval_po_number(po_number) {
 }
 
 function approve_po_number(po_number) {
+    console.log("---------------")
     frappe.call({
         method: 'shark.shark.report.po_approval_sheet.po_approval_sheet.approve_po',
         args: {
@@ -167,6 +193,20 @@ function reject_po_number(po_number) {
 function rework_po_number(po_number) {
     frappe.call({
         method: 'shark.shark.report.po_approval_sheet.po_approval_sheet.rework_po',
+        args: {
+            "po_number": po_number,
+        },
+        async: false,
+        callback: function(r) {
+            console.log("updated")
+
+        }
+    });
+}
+
+function cancel_po_number(po_number) {
+    frappe.call({
+        method: 'shark.shark.report.po_approval_sheet.po_approval_sheet.cancel_po',
         args: {
             "po_number": po_number,
         },
