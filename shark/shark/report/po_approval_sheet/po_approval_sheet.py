@@ -102,6 +102,7 @@ def reject_po(po_number):
 		frappe.msgprint("Don't have permission to Reject");
 	elif user_profile=="General Manager" or user_profile=="Managing Director" or admin=="Administrator":
 		frappe.db.set_value("Purchase Order",po_number,"workflow_status","Rejected");
+		doc=frappe.get_doc("Purchase Order",po_number);
 		doc.save(ignore_permissions=True)
 		frappe.msgprint("Rejected Successfully");
 		
@@ -120,6 +121,7 @@ def rework_po(po_number):
 		frappe.msgprint("Don't have permission to Rework");
 	elif user_profile=="General Manager" or user_profile=="Managing Director" or admin=="Administrator":
 		frappe.db.set_value("Purchase Order",po_number,"workflow_status","Being Modified");
+		doc=frappe.get_doc("Purchase Order",po_number);
 		doc.save(ignore_permissions=True)
 		frappe.msgprint("Rework Successfully");
 		
@@ -136,6 +138,7 @@ def ready_for_approval_po(po_number):
 		frappe.msgprint("Don't have permission to Ready For Approval");	
 	elif user_profile=="Purchase User" or admin=="Administrator":
 		frappe.db.set_value("Purchase Order",po_number,"workflow_status","Ready For Approval");
+		doc=frappe.get_doc("Purchase Order",po_number);
 		doc.save(ignore_permissions=True)
 		frappe.msgprint("Ready for Approval");
 	
