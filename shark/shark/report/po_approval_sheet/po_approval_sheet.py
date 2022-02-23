@@ -76,11 +76,11 @@ def approve_po(po_number):
 		print("entered in if block")
 		frappe.msgprint("Don't have permission to Approve");
 	elif user_profile=="General Manager":
-		frappe.db.set_value("Purchase Order",po_number,"workflow_status","Approved by GM");
+		frappe.db.set_value("Purchase Order",po_number,"workflow_state","Approved by GM");
 		doc=frappe.get_doc("Purchase Order",po_number);
 		doc.save(ignore_permissions=True)	
 	elif user_profile=="Managing Director" or admin=="Administrator":
-	  	frappe.db.set_value("Purchase Order",po_number,"workflow_status","Approved");
+	  	#frappe.db.set_value("Purchase Order",po_number,"workflow_status","Approved");
 	  	doc=frappe.get_doc("Purchase Order",po_number);
 	  	doc.save(ignore_permissions=True)
 	  	doc.submit()
@@ -101,7 +101,7 @@ def reject_po(po_number):
 		print("entered in if block")
 		frappe.msgprint("Don't have permission to Reject");
 	elif user_profile=="General Manager" or user_profile=="Managing Director" or admin=="Administrator":
-		frappe.db.set_value("Purchase Order",po_number,"workflow_status","Rejected");
+		frappe.db.set_value("Purchase Order",po_number,"workflow_state","Rejected");
 		doc=frappe.get_doc("Purchase Order",po_number);
 		doc.save(ignore_permissions=True)
 		frappe.msgprint("Rejected Successfully");
@@ -120,7 +120,7 @@ def rework_po(po_number):
 		print("entered in if block")
 		frappe.msgprint("Don't have permission to Rework");
 	elif user_profile=="General Manager" or user_profile=="Managing Director" or admin=="Administrator":
-		frappe.db.set_value("Purchase Order",po_number,"workflow_status","Being Modified");
+		frappe.db.set_value("Purchase Order",po_number,"workflow_state","Being Modified");
 		doc=frappe.get_doc("Purchase Order",po_number);
 		doc.save(ignore_permissions=True)
 		frappe.msgprint("Rework Successfully");
@@ -138,7 +138,6 @@ def ready_for_approval_po(po_number):
 		frappe.msgprint("Don't have permission to Ready For Approval");	
 	elif user_profile=="Purchase User" or admin=="Administrator":
 		frappe.db.set_value("Purchase Order",po_number,"workflow_status","Ready For Approval");
-		doc=frappe.get_doc("Purchase Order",po_number);
 		doc.save(ignore_permissions=True)
 		frappe.msgprint("Ready for Approval");
 	
@@ -153,10 +152,11 @@ def cancel_po(po_number):
 	if user_profile!="Purchase User" and user_profile=="None" and admin!="Administrator":
 		frappe.msgprint("Don't have permission to Cancel");
 	elif user_profile=="Purchase User" or admin=="Administrator":
-		frappe.db.set_value("Purchase Order",po_number,"workflow_status","Cancelled");
+		#frappe.db.set_value("Purchase Order",po_number,"workflow_state","Cancelled");
 		doc=frappe.get_doc("Purchase Order",po_number);
 		doc.save(ignore_permissions=True)
 		doc.cancel()
+		
 		frappe.msgprint("Cancelled Successfully");
     
     
@@ -187,7 +187,7 @@ def get_conditions(filters):
 	if filters.get("date"):
 		conditions += 'and po.transaction_date = %s'  % frappe.db.escape(filters.get("date"), percent=False)
 	if filters.get("workflow_status"):
-		conditions += 'and po.workflow_status = %s'  % frappe.db.escape(filters.get("workflow_status"), percent=False)
+		conditions += 'and po.workflow_state = %s'  % frappe.db.escape(filters.get("workflow_status"), percent=False)
 	if filters.get("po_status"):
 		conditions += 'and po.status = %s'  % frappe.db.escape(filters.get("po_status"), percent=False)
 	print("conditions",conditions)

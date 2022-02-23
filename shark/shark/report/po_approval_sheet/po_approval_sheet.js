@@ -14,7 +14,7 @@ frappe.query_reports["Po Approval Sheet"] = {
             "fieldname": "workflow_status",
             "fieldtype": "Select",
             "reqd":1,
-            "options": ["", "Draft",
+            "options": ["",
                 "Ready for Approval",
                 "Approved By GM",
                 "Being Modified",
@@ -122,6 +122,7 @@ frappe.query_reports["Po Approval Sheet"] = {
                 }
             }
         });
+        /*
         report.page.add_action_item(__("Cancel"), function() {
             let checked_rows_indexes = report.datatable.rowmanager.getCheckedRows();
             let checked_rows = checked_rows_indexes.map(i => report.data[i]);
@@ -136,6 +137,7 @@ frappe.query_reports["Po Approval Sheet"] = {
                 }
             }
         });
+        */
 
     },
     get_datatable_options(options) {
