@@ -152,11 +152,10 @@ def cancel_po(po_number):
 	if user_profile!="Purchase User" and user_profile=="None" and admin!="Administrator":
 		frappe.msgprint("Don't have permission to Cancel");
 	elif user_profile=="Purchase User" or admin=="Administrator":
-		#frappe.db.set_value("Purchase Order",po_number,"workflow_state","Cancelled");
+		frappe.db.set_value("Purchase Order",po_number,"workflow_state","Cancelled");
 		doc=frappe.get_doc("Purchase Order",po_number);
+		doc.docstatus=2
 		doc.save(ignore_permissions=True)
-		doc.cancel()
-		
 		frappe.msgprint("Cancelled Successfully");
     
     

@@ -122,7 +122,7 @@ frappe.query_reports["Po Approval Sheet"] = {
                 }
             }
         });
-        /*
+        
         report.page.add_action_item(__("Cancel"), function() {
             let checked_rows_indexes = report.datatable.rowmanager.getCheckedRows();
             let checked_rows = checked_rows_indexes.map(i => report.data[i]);
@@ -137,7 +137,7 @@ frappe.query_reports["Po Approval Sheet"] = {
                 }
             }
         });
-        */
+        
 
     },
     get_datatable_options(options) {
