@@ -69,18 +69,18 @@ where po.name=poi.parent and po.name='"""+po_details.name+"""'  """ , as_dict=1)
 def approve_po(po_number):
 	print("entered-------------",po_number)
 	user_profile=frappe.db.get_value("User",{"name":frappe.session.user},"role_profile_name")
-	print("user profile",user_profile)
+	#print("user profile",user_profile)
 	admin=frappe.db.get_value("User",{"name":frappe.session.user},"first_name")
-	print("admin",admin)
+	#print("admin",admin)
 	if user_profile!="General Manager" and user_profile!="Managing Director" and user_profile=="None" and admin!="Administrator":
 		print("entered in if block")
 		frappe.msgprint("Don't have permission to Approve");
 	elif user_profile=="General Manager":
 		frappe.db.set_value("Purchase Order",po_number,"workflow_state","Approved By GM");
 		doc=frappe.get_doc("Purchase Order",po_number);
-		#doc.docstatus=0
 		doc.save(ignore_permissions=True)
 		frappe.msgprint("Approved By GM Successfully");	
+
 	elif user_profile=="Managing Director" or admin=="Administrator":
 	  	#frappe.db.set_value("Purchase Order",po_number,"workflow_status","Approved");
 	  	doc=frappe.get_doc("Purchase Order",po_number);
