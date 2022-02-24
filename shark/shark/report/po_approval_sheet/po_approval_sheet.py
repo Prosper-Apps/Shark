@@ -41,7 +41,7 @@ def execute(filters=None):
 			po_list_data.stock_uom,po_list_data.qty,
 			po_list_data.uom,po_list_data.rate,
 			po_list_data.amount,po_list_data.total_taxes_and_charges,
-			po_list_data.grand_total,po_list_data.payment_terms_template])
+			"",po_list_data.payment_terms_template])
 		sum_data.append(["","","","","Total","",d.total_qty,"",d.total_qty,"","",d.net_total,"",d.grand_total,""])
 		#print("sum_data",sum_data)
 	return columns, sum_data
