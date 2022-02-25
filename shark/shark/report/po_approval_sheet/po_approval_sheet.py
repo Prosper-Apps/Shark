@@ -28,13 +28,18 @@ def execute(filters=None):
 	purchase_order_details = fetching_po_details(filters)
 	for d in purchase_order_details:
 		po_data = frappe.db.sql("""select po.transaction_date as date,po.name,
-		po.status,poi.project,po.supplier,poi.item_code,poi.stock_qty,sum(poi.stock_qty) as total_stock_qty,
+		po.status,poi.project,po.supplier,poi.item_code,poi.stock_qty,
 		poi.stock_uom,poi.qty,poi.uom,poi.rate,poi.amount,po.total_taxes_and_charges,
 		po.grand_total,po.payment_terms_template
 		from `tabPurchase Order` po,`tabPurchase Order Item` poi 
 		where po.name=poi.parent and po.name='"""+d.name+"""'""" , as_dict=1)
 		print("po_data",po_data)
-		total_stock_qty=po_data[0].total_stock_qty
+		total_stock_qty=frappe.db.sql("""select sum(poi.stock_qty) as total_stock_qty
+		from `tabPurchase Order` po,`tabPurchase Order Item` poi 
+		where po.name=poi.parent and po.name='"""+d.name+"""'""" , as_dict=1)
+		print("total_stock_qty",total_stock_qty)
+		total_stock=total_stock_qty[0]['total_stock_qty']
+		print("total_stock",total_stock)
 		for po_list_data in po_data:
 			sum_data.append([po_list_data.date.strftime("%d-%m-%Y"),
 			po_list_data.name,po_list_data.status,
@@ -45,7 +50,7 @@ def execute(filters=None):
 			po_list_data.amount,"",
 			"",po_list_data.payment_terms_template])
 		
-		sum_data.append(["","","","","Total","",total_stock_qty,"",d.total_qty,"","",d.net_total,d.total_taxes_and_charges,d.rounded_total,""])
+		sum_data.append(["","","","","Total","",total_stock,"",d.total_qty,"","",d.net_total,d.total_taxes_and_charges,d.rounded_total,""])
 		#print("sum_data",sum_data)
 	return columns, sum_data
 

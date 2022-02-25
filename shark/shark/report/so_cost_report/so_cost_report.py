@@ -149,7 +149,7 @@ def execute(filters=None):
 	    if get_total[0].add_total_row == 0:
 	      data.append(["","","","","","","","","","","","","",""])
 	      data.append(["Total","","",total_bom_qty,"",total_last_purchase_rate,total_item_cost_base_on_last_purchase
-			,round(total_stock_valuation_price),round(total_item_cost_based_on_valuation_rate),"",""])
+			,round(float(total_stock_valuation_price),2),round(float(total_item_cost_based_on_valuation_rate),2),"",""])
 		 
 	return columns, data
 
