@@ -28,11 +28,13 @@ def execute(filters=None):
 	purchase_order_details = fetching_po_details(filters)
 	for d in purchase_order_details:
 		po_data = frappe.db.sql("""select po.transaction_date as date,po.name,
-		po.status,poi.project,po.supplier,poi.item_code,poi.stock_qty,
+		po.status,poi.project,po.supplier,poi.item_code,poi.stock_qty,sum(poi.stock_qty) as total_stock_qty,
 		poi.stock_uom,poi.qty,poi.uom,poi.rate,poi.amount,po.total_taxes_and_charges,
 		po.grand_total,po.payment_terms_template
 		from `tabPurchase Order` po,`tabPurchase Order Item` poi 
 		where po.name=poi.parent and po.name='"""+d.name+"""'""" , as_dict=1)
+		print("po_data",po_data)
+		total_stock_qty=po_data[0].total_stock_qty
 		for po_list_data in po_data:
 			sum_data.append([po_list_data.date.strftime("%d-%m-%Y"),
 			po_list_data.name,po_list_data.status,
@@ -40,16 +42,17 @@ def execute(filters=None):
 			po_list_data.item_code,po_list_data.stock_qty,
 			po_list_data.stock_uom,po_list_data.qty,
 			po_list_data.uom,po_list_data.rate,
-			po_list_data.amount,po_list_data.total_taxes_and_charges,
+			po_list_data.amount,"",
 			"",po_list_data.payment_terms_template])
-		sum_data.append(["","","","","Total","",d.total_qty,"",d.total_qty,"","",d.net_total,"",d.grand_total,""])
+		
+		sum_data.append(["","","","","Total","",total_stock_qty,"",d.total_qty,"","",d.net_total,d.total_taxes_and_charges,d.rounded_total,""])
 		#print("sum_data",sum_data)
 	return columns, sum_data
 
 def fetching_po_details(filters):
 	condition = get_conditions(filters)
 	print("condition",condition)
-	po_list=frappe.db.sql("""select po.name,po.grand_total,po.total_qty,po.net_total 
+	po_list=frappe.db.sql("""select po.name,po.rounded_total,po.total_qty,po.net_total,po.total_taxes_and_charges 
 	from `tabPurchase Order` po  where po.transaction_date!=""
     %s """ %
 			condition, as_dict=1)
@@ -69,18 +72,18 @@ where po.name=poi.parent and po.name='"""+po_details.name+"""'  """ , as_dict=1)
 def approve_po(po_number):
 	print("entered-------------",po_number)
 	user_profile=frappe.db.get_value("User",{"name":frappe.session.user},"role_profile_name")
-	#print("user profile",user_profile)
+	print("user profile",user_profile)
 	admin=frappe.db.get_value("User",{"name":frappe.session.user},"first_name")
-	#print("admin",admin)
+	print("admin",admin)
 	if user_profile!="General Manager" and user_profile!="Managing Director" and user_profile=="None" and admin!="Administrator":
 		print("entered in if block")
 		frappe.msgprint("Don't have permission to Approve");
 	elif user_profile=="General Manager":
 		frappe.db.set_value("Purchase Order",po_number,"workflow_state","Approved By GM");
 		doc=frappe.get_doc("Purchase Order",po_number);
+		#doc.docstatus=0
 		doc.save(ignore_permissions=True)
 		frappe.msgprint("Approved By GM Successfully");	
-
 	elif user_profile=="Managing Director" or admin=="Administrator":
 	  	#frappe.db.set_value("Purchase Order",po_number,"workflow_status","Approved");
 	  	doc=frappe.get_doc("Purchase Order",po_number);
