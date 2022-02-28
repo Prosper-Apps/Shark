@@ -139,7 +139,7 @@ def execute(filters=None):
 	          total_max_purchase = round(float(total_max_purchase),2)
 	          total_min_purchase = round(float(total_min_purchase),2)
 	          data.append([bom_name,item_group,item_code,stock_qty,stock_uom,last_purchase_rate,
-						item_cost_base_on_last_purchase ,stock_valuation_price,item_cost_based_on_valuation_rate
+						item_cost_base_on_last_purchase ,round(stock_valuation_price),round(item_cost_based_on_valuation_rate)
 						])
 	          
 	        else:

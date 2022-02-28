@@ -27,49 +27,32 @@ def execute(filters=None):
 	
 	purchase_order_details = fetching_po_details(filters)
 	for d in purchase_order_details:
-		po_data = frappe.db.sql("""select po.transaction_date as date,po.name,
-		po.status,poi.project,poi.material_request,po.supplier,poi.item_code,poi.stock_qty,
-		poi.stock_uom,poi.qty,poi.uom,poi.rate,poi.amount,po.total_taxes_and_charges,
-		po.grand_total,po.payment_terms_template
+		item_data=frappe.db.sql("""select poi.project,poi.material_request
 		from `tabPurchase Order` po,`tabPurchase Order Item` poi 
 		where po.name=poi.parent and po.name='"""+d.name+"""'""" , as_dict=1)
-		print("po_data",po_data)
-		total_stock_qty=frappe.db.sql("""select sum(poi.stock_qty) as total_stock_qty
-		from `tabPurchase Order` po,`tabPurchase Order Item` poi 
-		where po.name=poi.parent and po.name='"""+d.name+"""'""" , as_dict=1)
-		print("total_stock_qty",total_stock_qty)
-		total_stock=total_stock_qty[0]['total_stock_qty']
-		print("total_stock",total_stock)
-		for po_list_data in po_data:
-			sum_data.append([po_list_data.date.strftime("%d-%m-%Y"),
-			po_list_data.name,po_list_data.status,
-			po_list_data.project,po_list_data.material_request,po_list_data.supplier,
-			po_list_data.item_code,po_list_data.stock_qty,
-			po_list_data.stock_uom,po_list_data.qty,
-			po_list_data.uom,po_list_data.rate,
-			po_list_data.amount,"",
-			"",po_list_data.payment_terms_template])
-		
-		sum_data.append(["","","","","","Total","",total_stock,"",d.total_qty,"","",d.net_total,d.total_taxes_and_charges,d.rounded_total,""])
+		print("item_data",item_data)
+		project=item_data[0]['project']
+		material_request=item_data[0]['material_request']
+		print("material_request",material_request)
+		sum_data.append([d.date.strftime("%d-%m-%Y"),
+			d.name,d.status,
+			project,material_request,
+			d.supplier,d.net_total,
+			d.total_taxes_and_charges,d.rounded_total])
 		#print("sum_data",sum_data)
 	return columns, sum_data
 
 def fetching_po_details(filters):
 	condition = get_conditions(filters)
 	print("condition",condition)
-	po_list=frappe.db.sql("""select po.name,po.rounded_total,po.total_qty,po.net_total,po.total_taxes_and_charges 
+	po_list=frappe.db.sql("""select po.name,
+	po.rounded_total,po.transaction_date as date,
+	po.status,po.supplier,
+	po.net_total,po.total_taxes_and_charges 
 	from `tabPurchase Order` po  where po.transaction_date!=""
     %s """ %
 			condition, as_dict=1)
-	for po_details in po_list:
-		po_data = frappe.db.sql("""select po.transaction_date as date,po.name,
-po.status,poi.project,po.supplier,poi.item_code,poi.stock_qty,
-poi.stock_uom,poi.qty,poi.uom,poi.rate,poi.amount,po.total_taxes_and_charges,
-po.grand_total,po.payment_terms_template 
-from `tabPurchase Order` po,`tabPurchase Order Item` poi 
-where po.name=poi.parent and po.name='"""+po_details.name+"""'  """ , as_dict=1)
-#print("po_data",po_data)
-#print("po_data after",po_data)
+	
 
 	return po_list
 
@@ -181,16 +164,9 @@ def get_columns():
 			_("Project")+":Link/Project:150",
 			_("Material Request No")+":Link/Material Request:150",
 			_("Supplier")+":Link/Item:200",
-			_("Item Code")+":Link/UOM:100",
-			_("Stock Qty")+"::80",
-			_("Stock Uom")+"::100",
-			_("Purchase Qty")+"::100",
-			_("Purchase Uom")+"::100",
-			_("Net Purchase Rate")+"::100",
-			_("Total Net Value")+"::100",
+			_("Net Total Value")+"::100",
 			_("Total Tax")+"::100",
-			_("Grand Total")+"::100",
-			_("Payment Terms")+"::100"
+			_("Grand Total")+"::100"
 			]
 	return columns
 
