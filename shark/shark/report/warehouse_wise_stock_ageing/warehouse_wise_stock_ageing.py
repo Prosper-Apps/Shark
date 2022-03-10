@@ -11,43 +11,82 @@ from frappe.utils import cint, date_diff, flt
 from six import iteritems
 
 from erpnext.stock.doctype.serial_no.serial_no import get_serial_nos
-
+from frappe.utils import flt, cint, getdate, now, date_diff
 
 def execute(filters=None):
-	columns = get_columns(filters)
-	item_details = get_fifo_queue(filters)
-	to_date = filters["to_date"]
-	_func = itemgetter(1)
+    columns = get_columns(filters)
+    item_details = get_fifo_queue(filters)
+    print("item_details",item_details)
+    to_date = filters["to_date"]
+    _func = itemgetter(1)
+    iwb_map = {}
+    data = []
+    from_date = getdate(filters.get("from_date"))
+    for item, item_dict in iteritems(item_details):
+        earliest_age, latest_age = 0, 0
+        
+        fifo_queue = sorted(filter(_func, item_dict["fifo_queue"]), key=_func)
+        details = item_dict["details"]
+        #print("details",details)
+        if not fifo_queue: continue
+        
+        average_age = get_average_age(fifo_queue, to_date)
+        earliest_age = date_diff(to_date, fifo_queue[0][1])
+        latest_age = date_diff(to_date, fifo_queue[-1][1])
+        range1, range2, range3,range4,range5,above_range5 = get_range_age(filters, fifo_queue, to_date, item_dict)
+        
+        row = [details.name, details.item_name,
+        	details.description, details.item_group, details.brand,details.warehouse]
+        bal_qty=0.0
+        opening_qty=0.0
+        opening_val=0.0
+        in_qty=0.0
+        in_val=0.0
+        out_qty=0.0
+        out_val=0.0
+        bal_val=0.0
+        if details.voucher_type == "Stock Reconciliation":
+        	qty_diff = flt(details.qty_after_transaction) - flt(bal_qty)
+        else:
+        	qty_diff = flt(details.actual_qty)
+        value_diff = flt(details.stock_value_difference)
+        print("qty_diff",qty_diff)
+        from_date = getdate(filters.get("from_date"))
+        float_precision = cint(frappe.db.get_default("float_precision")) or 3
+        if details.posting_date < from_date:
+        	opening_qty += qty_diff
+        	opening_val += value_diff
 
-	data = []
-	for item, item_dict in iteritems(item_details):
-		earliest_age, latest_age = 0, 0
+        elif details.posting_date >= from_date and details.posting_date <= to_date:
+        	if flt(qty_diff, float_precision) >= 0:
+        		in_qty += qty_diff
+        		in_val += value_diff
+        	else:
+        		out_qty += abs(qty_diff)
+        		out_val += abs(value_diff)
+		
 
-		fifo_queue = sorted(filter(_func, item_dict["fifo_queue"]), key=_func)
-		details = item_dict["details"]
-
-		if not fifo_queue: continue
-
-		average_age = get_average_age(fifo_queue, to_date)
-		earliest_age = date_diff(to_date, fifo_queue[0][1])
-		latest_age = date_diff(to_date, fifo_queue[-1][1])
-		range1, range2, range3,range4,range5,above_range5 = get_range_age(filters, fifo_queue, to_date, item_dict)
-
-		row = [details.name, details.item_name,
-			details.description, details.item_group, details.brand]
-
-		if filters.get("show_warehouse_wise_stock"):
-			row.append(details.warehouse)
-
-		row.extend([item_dict.get("total_qty"), average_age,
-			range1, range2, range3, range4,range5,above_range5,
-			earliest_age, latest_age, details.stock_uom])
-
-		data.append(row)
-
-	chart_data = get_chart_data(data, filters)
-
-	return columns, data, None, chart_data
+        val_rate = details.valuation_rate
+        bal_qty += qty_diff
+        bal_val += value_diff
+        row.append(opening_qty)
+        row.append(in_qty)
+        row.append(out_qty)
+        row.append(bal_qty)
+        row.append(bal_val)
+        	
+        	
+        
+        
+        row.extend([item_dict.get("total_qty"), average_age,
+        	range1, range2, range3, range4,range5,above_range5,
+        	earliest_age, latest_age, details.stock_uom])
+        
+        data.append(row)
+	#print("final data",data)
+    chart_data = get_chart_data(data, filters)
+    
+    return columns, data, None, chart_data
 
 def get_average_age(fifo_queue, to_date):
 	batch_age = age_qty = total_qty = 0.0
@@ -119,16 +158,21 @@ def get_columns(filters):
 			"fieldtype": "Link",
 			"options": "Brand",
 			"width": 100
-		}]
-
-	if filters.get("show_warehouse_wise_stock"):
-		columns +=[{
+		},
+		{
 			"label": _("Warehouse"),
 			"fieldname": "warehouse",
 			"fieldtype": "Link",
 			"options": "Warehouse",
 			"width": 100
-		}]
+		},
+		{"label": _("Opening Qty"), "fieldname": "opening_qty", "fieldtype": "Float", "width": 100},
+		{"label": _("In Qty"), "fieldname": "in_qty", "fieldtype": "Float", "width": 80},
+		{"label": _("Out Qty"), "fieldname": "out_qty", "fieldtype": "Float", "width": 80},
+		{"label": _("Balance Qty"), "fieldname": "bal_qty", "fieldtype": "Float", "width": 100},
+		{"label": _("Balance Value"), "fieldname": "bal_val", "fieldtype": "Currency", "width": 100, "options": "currency"}]
+
+	
 
 	columns.extend([
 		{
@@ -177,7 +221,7 @@ def get_fifo_queue(filters, sle=None):
 		sle = get_stock_ledger_entries(filters)
 
 	for d in sle:
-		key = (d.name, d.warehouse) if filters.get('show_warehouse_wise_stock') else d.name
+		key = (d.name, d.warehouse) 
 		item_details.setdefault(key, {"details": d, "fifo_queue": []})
 		fifo_queue = item_details[key]["fifo_queue"]
 
@@ -253,6 +297,8 @@ def get_item_conditions(filters):
 	conditions = []
 	if filters.get("item_code"):
 		conditions.append("item_code=%(item_code)s")
+	if filters.get("item_group"):
+		conditions.append("item_group=%(item_group)s")
 	if filters.get("brand"):
 		conditions.append("brand=%(brand)s")
 
@@ -273,8 +319,7 @@ def get_chart_data(data, filters):
 
 	labels, datapoints = [], []
 
-	if filters.get("show_warehouse_wise_stock"):
-		return {}
+	
 
 	data.sort(key = lambda row: row[6], reverse=True)
 

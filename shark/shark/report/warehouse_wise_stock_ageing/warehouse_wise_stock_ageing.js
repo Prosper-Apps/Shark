@@ -37,6 +37,13 @@ frappe.query_reports["Warehouse Wise Stock Ageing"] = {
 			"fieldtype": "Link",
 			"options": "Brand"
 		},
+		
+		{
+			"fieldname":"item_group",
+			"label": __("Item Group"),
+			"fieldtype": "Link",
+			"options":"Item Group"
+		},
 		{
 			"fieldname":"range1",
 			"label": __("Ageing Range 1"),
@@ -71,12 +78,6 @@ frappe.query_reports["Warehouse Wise Stock Ageing"] = {
 			"fieldtype": "Int",
 			"default": "150",
 			"reqd": 1
-		},
-		{
-			"fieldname":"show_warehouse_wise_stock",
-			"label": __("Show Warehouse-wise Stock"),
-			"fieldtype": "Check",
-			"default": 0
 		}
 	]
 }
