@@ -13,6 +13,14 @@ frappe.query_reports["Warehouse Wise Stock Ageing"] = {
 			"reqd": 1
 		},
 		{
+			"fieldname":"from_date",
+			"label": __("From Date"),
+			"fieldtype": "Date",
+			"default": frappe.datetime.add_months(frappe.datetime.get_today(), -1),
+			"reqd": 1,
+			"width": "60px"
+		},
+		{
 			"fieldname":"to_date",
 			"label": __("As On Date"),
 			"fieldtype": "Date",
