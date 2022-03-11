@@ -13,14 +13,6 @@ frappe.query_reports["Warehouse Wise Stock Ageing"] = {
 			"reqd": 1
 		},
 		{
-			"fieldname":"from_date",
-			"label": __("From Date"),
-			"fieldtype": "Date",
-			"default": frappe.datetime.add_months(frappe.datetime.get_today(), -1),
-			"reqd": 1,
-			"width": "60px"
-		},
-		{
 			"fieldname":"to_date",
 			"label": __("As On Date"),
 			"fieldtype": "Date",
@@ -44,13 +36,6 @@ frappe.query_reports["Warehouse Wise Stock Ageing"] = {
 			"label": __("Brand"),
 			"fieldtype": "Link",
 			"options": "Brand"
-		},
-		
-		{
-			"fieldname":"item_group",
-			"label": __("Item Group"),
-			"fieldtype": "Link",
-			"options":"Item Group"
 		},
 		{
 			"fieldname":"range1",
@@ -86,6 +71,12 @@ frappe.query_reports["Warehouse Wise Stock Ageing"] = {
 			"fieldtype": "Int",
 			"default": "150",
 			"reqd": 1
+		},
+		{
+			"fieldname":"show_warehouse_wise_stock",
+			"label": __("Show Warehouse-wise Stock"),
+			"fieldtype": "Check",
+			"default": 0
 		}
 	]
 }
