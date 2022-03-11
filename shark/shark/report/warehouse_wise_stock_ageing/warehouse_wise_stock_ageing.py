@@ -1,6 +1,5 @@
-# Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
-# License: GNU General Public License v3. See license.txt
-
+# Copyright (c) 2013, Pavithra M R and contributors
+# For license information, please see license.txt
 from __future__ import unicode_literals
 
 from operator import itemgetter
@@ -46,9 +45,9 @@ def execute(filters=None):
         out_val=0.0
         bal_val=0.0
         if details.voucher_type == "Stock Reconciliation":
-        	qty_diff = flt(details.qty_after_transaction) - flt(bal_qty)
+            qty_diff = flt(details.qty_after_transaction) - flt(bal_qty)
         else:
-        	qty_diff = flt(details.actual_qty)
+            qty_diff = flt(details.actual_qty)
         value_diff = flt(details.stock_value_difference)
         print("qty_diff",qty_diff)
         from_date = getdate(filters.get("from_date"))
@@ -87,6 +86,7 @@ def execute(filters=None):
     chart_data = get_chart_data(data, filters)
     
     return columns, data, None, chart_data
+
 
 def get_average_age(fifo_queue, to_date):
 	batch_age = age_qty = total_qty = 0.0
@@ -360,3 +360,4 @@ def add_column(range_columns, label, fieldname, fieldtype='Float', width=140):
 		fieldtype=fieldtype,
 		width=width
 	))
+
