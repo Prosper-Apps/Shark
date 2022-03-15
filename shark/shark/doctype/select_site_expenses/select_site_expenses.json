@@ -1,0 +1,90 @@
+{
+ "autoname": "hash",
+ "creation": "2022-03-14 10:48:08.891698",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "expense_desc",
+  "description",
+  "days",
+  "men",
+  "rate",
+  "amount"
+ ],
+ "fields": [
+  {
+   "bold": 1,
+   "columns": 2,
+   "fieldname": "expense_desc",
+   "fieldtype": "Link",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "label": "Expense Desc",
+   "options": "Expense Claim Type",
+   "print_width": "150px",
+   "reqd": 1,
+   "width": "150px"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "columns": 3,
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "label": "Description"
+  },
+  {
+   "columns": 1,
+   "depends_on": "doc.days",
+   "fieldname": "days",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Days",
+   "print_width": "100px",
+   "reqd": 1,
+   "width": "100px"
+  },
+  {
+   "columns": 1,
+   "fieldname": "men",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Men",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "depends_on": "eval: doc.type != \"\"",
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate (1 Day 1 Man)",
+   "print_width": "100px",
+   "reqd": 1,
+   "width": "100px"
+  },
+  {
+   "columns": 1,
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "amount",
+   "options": "currency",
+   "print_width": "100px",
+   "width": "100px"
+  }
+ ],
+ "istable": 1,
+ "modified": "2022-03-15 09:47:43.105102",
+ "modified_by": "Administrator",
+ "module": "shark",
+ "name": "Select_Site_Expenses",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "show_name_in_global_search": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

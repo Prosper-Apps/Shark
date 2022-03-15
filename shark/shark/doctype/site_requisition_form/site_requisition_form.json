@@ -1,0 +1,369 @@
+{
+ "autoname": "naming_series:",
+ "creation": "2022-03-14 11:37:20.782426",
+ "doctype": "DocType",
+ "document_type": "Setup",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "posting_date",
+  "naming_series",
+  "employee",
+  "employee_name",
+  "department",
+  "is_paid",
+  "project_detail_section",
+  "projected_expense",
+  "site_code",
+  "project",
+  "project_name",
+  "location",
+  "format_type",
+  "zone",
+  "other_description",
+  "column_break_column",
+  "workers",
+  "supervisors_require",
+  "expected_start_date",
+  "expected_end_date",
+  "actual_start_date",
+  "actual_end_date",
+  "expense_details",
+  "expenses",
+  "sb1",
+  "total_expense",
+  "worker_wages_a_day",
+  "supervisor_salary",
+  "column_break_25",
+  "wages_made",
+  "salary_made",
+  "total_cost",
+  "more_details_section",
+  "remark",
+  "accounting_details_section",
+  "company",
+  "mode_of_payment",
+  "clearance_date",
+  "column_break_24",
+  "payable_account",
+  "cost_center",
+  "amended_from",
+  "advance_payments_section",
+  "advances",
+  "total_advance_amount"
+ ],
+ "fields": [
+  {
+   "bold": 1,
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Requisition Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "no_copy": 1,
+   "options": "STRQ",
+   "print_hide": 1,
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Site Supervisor (Requisition for)",
+   "options": "Employee"
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee.department",
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:(doc.docstatus==0 || doc.is_paid)",
+   "fieldname": "is_paid",
+   "fieldtype": "Check",
+   "label": "Is Paid"
+  },
+  {
+   "fieldname": "project_detail_section",
+   "fieldtype": "Section Break",
+   "label": "Site Detail"
+  },
+  {
+   "fetch_from": "site_code.site_budge",
+   "fieldname": "projected_expense",
+   "fieldtype": "Currency",
+   "label": "Projected Site Expense (Maximum Limit)"
+  },
+  {
+   "fetch_from": "site_code.bom_code",
+   "fieldname": "project",
+   "fieldtype": "Data",
+   "label": "BOM CODE",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "site_code.project_name",
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "label": "Project Name"
+  },
+  {
+   "fetch_from": "site_code.location",
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "site_code.format_type",
+   "fieldname": "format_type",
+   "fieldtype": "Data",
+   "label": "Format Type",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "site_code.zone",
+   "fieldname": "zone",
+   "fieldtype": "Data",
+   "label": "Zone"
+  },
+  {
+   "fetch_from": "site_code.other_Description",
+   "fieldname": "other_description",
+   "fieldtype": "Data",
+   "label": "Other Description",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "workers",
+   "fieldtype": "Data",
+   "label": "No. of Workers Reuired",
+   "reqd": 1
+  },
+  {
+   "fieldname": "supervisors_require",
+   "fieldtype": "Data",
+   "label": "Supervisors Require",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "site_code.expected_start_date",
+   "fieldname": "expected_start_date",
+   "fieldtype": "Date",
+   "label": "Expected Start Date",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "site_code.expected_end_date",
+   "fieldname": "expected_end_date",
+   "fieldtype": "Date",
+   "label": "Expected End Date"
+  },
+  {
+   "fetch_from": "site_code.actual_start_date",
+   "fieldname": "actual_start_date",
+   "fieldtype": "Data",
+   "label": "Actual Start Date"
+  },
+  {
+   "fetch_from": "site_code.actual_end_date",
+   "fieldname": "actual_end_date",
+   "fieldtype": "Data",
+   "label": "Actual End Date"
+  },
+  {
+   "fieldname": "expense_details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "expenses",
+   "fieldtype": "Table",
+   "label": "Expenses",
+   "options": "Select_Site_Expenses",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sb1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "bold": 1,
+   "fieldname": "site_code",
+   "fieldtype": "Link",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "label": "Site Code",
+   "options": "Project Site",
+   "search_index": 1
+  },
+  {
+   "fieldname": "total_expense",
+   "fieldtype": "Currency",
+   "label": "Total Expense",
+   "options": "Company:company:default_currency"
+  },
+  {
+   "default": "750",
+   "fieldname": "worker_wages_a_day",
+   "fieldtype": "Currency",
+   "label": "Worker Wages A Day"
+  },
+  {
+   "default": "1000",
+   "fieldname": "supervisor_salary",
+   "fieldtype": "Currency",
+   "label": "Supervisor Salary A Day"
+  },
+  {
+   "fieldname": "column_break_25",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "wages_made",
+   "fieldtype": "Currency",
+   "label": "Wages Made"
+  },
+  {
+   "fieldname": "salary_made",
+   "fieldtype": "Currency",
+   "label": "Salary Made"
+  },
+  {
+   "fieldname": "total_cost",
+   "fieldtype": "Currency",
+   "label": "Total Cost (This Requisition/Site)"
+  },
+  {
+   "fieldname": "more_details_section",
+   "fieldtype": "Section Break",
+   "label": "More Details"
+  },
+  {
+   "fieldname": "remark",
+   "fieldtype": "Small Text",
+   "label": "Remark",
+   "no_copy": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "accounting_details_section",
+   "fieldtype": "Section Break",
+   "label": "Accounting Details"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "remember_last_selected_value": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "mode_of_payment",
+   "fieldtype": "Link",
+   "label": "Mode of Payment",
+   "options": "Mode of Payment"
+  },
+  {
+   "fieldname": "clearance_date",
+   "fieldtype": "Date",
+   "label": "Clearance Date"
+  },
+  {
+   "fieldname": "column_break_24",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payable_account",
+   "fieldtype": "Link",
+   "label": "Payable Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Expense Claim",
+   "print_hide": 1,
+   "read_only": 1,
+   "report_hide": 1,
+   "width": "160px"
+  },
+  {
+   "fieldname": "advance_payments_section",
+   "fieldtype": "Section Break",
+   "label": "Advance Payments"
+  },
+  {
+   "fieldname": "advances",
+   "fieldtype": "Table",
+   "label": "Advances",
+   "options": "Expense Claim Advance"
+  },
+  {
+   "fieldname": "total_advance_amount",
+   "fieldtype": "Currency",
+   "label": "Total Advance Amount",
+   "options": "Company:company:default_currency",
+   "read_only": 1
+  }
+ ],
+ "icon": "fa fa-money",
+ "modified": "2022-03-14 13:14:33.983764",
+ "modified_by": "Administrator",
+ "module": "shark",
+ "name": "Site Requisition Form",
+ "name_case": "Title Case",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "search_fields": "employee,employee_name",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "timeline_field": "employee",
+ "title_field": "site_code",
+ "track_changes": 1,
+ "track_views": 1
+}
