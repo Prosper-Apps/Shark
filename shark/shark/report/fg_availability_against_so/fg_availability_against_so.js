@@ -13,9 +13,9 @@ frappe.query_reports["FG Availability Against SO"] = {
 	{
 		"fieldname": "master_customer",
 		"label": __("Master Customer"),
-		"fieldtype": "Select",
+		"fieldtype": "Link",
 		"reqd": 1,
-		"options": ["Adidas", "Puma"],
+		"options": "Master Customer"
 		
 	},
        {
