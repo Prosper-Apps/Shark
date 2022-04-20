@@ -32,8 +32,8 @@ def execute(filters=None):
 	  print("=========",sales_item_code)
 	  bom=frappe.db.get_value("BOM",{"item":sales_item_code,"is_default":1},"name")
 	  print("item_default_bom",bom)
-	  if bom is None:
-	    frappe.msgprint(" Item "+sales_item_code+" does not have default BOM")
+	  #if bom is None:
+	    #frappe.msgprint(" Item "+sales_item_code+" does not have default BOM")
 	  if bom is not None:
 	    bom_item = bom_details(company ,bom)
 	    total_bom_qty = 0.0
