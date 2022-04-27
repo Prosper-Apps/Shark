@@ -103,6 +103,8 @@ def execute(filters=None):
 					
 					if total_item_cost==0:
 						input_cost_for_raw_material="No"
+					else:
+						input_cost_for_raw_material="Yes"
 					
 					data.append([default_bom_available,bom,sales_item_code,item_name,qty,stock_qty,stock_uom,stock_valuation_price,last_purchase_rate,purchase_uom,
 					conversion_factor,valuation_cost_in_stock_uom,total_item_cost,input_cost_for_raw_material,""])
