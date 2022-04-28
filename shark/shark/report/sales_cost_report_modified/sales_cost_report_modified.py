@@ -39,7 +39,7 @@ def execute(filters=None):
 		print("item_default_bom",bom)
 		if bom is None:
 			default_bom_available="No"
-			data.append([default_bom_available,bom,sales_item_code,"",qty,"",stock_uom,"","","","","","","",""])
+			data.append([default_bom_available,bom,sales_item_code,"","","",stock_uom,"","","","","","","",""])
 		#frappe.msgprint(" Item "+sales_item_code+" does not have default BOM")
 		if bom is not None:
 			bom_item = bom_details(company ,bom)
@@ -100,15 +100,28 @@ def execute(filters=None):
 					valuation_cost_in_stock_uom=conversion_factor*last_purchase_rate
 					print("valuation_cost_in_stock_uom",valuation_cost_in_stock_uom)
 					total_item_cost=valuation_cost_in_stock_uom*stock_qty
-					
-					if total_item_cost==0:
-						input_cost_for_raw_material="No"
-					else:
-						input_cost_for_raw_material="Yes"
+					input_cost_for_raw_material="Yes"
 					
 					data.append([default_bom_available,bom,sales_item_code,item_name,qty,stock_qty,stock_uom,stock_valuation_price,last_purchase_rate,purchase_uom,
 					conversion_factor,valuation_cost_in_stock_uom,total_item_cost,input_cost_for_raw_material,""])
+	data=test(data)	
 	return columns, data
+
+def test(data):
+	array1=[]
+	for d in data:
+		if d[12]==0:
+			if d[1] not in array1:
+				array1.append(d[1]) 
+	print("array1",array1)
+	for a in array1:
+		for d in data:
+			if a==d[1]:
+				d[13]="No"
+			else:
+				d[13]="Yes"
+	print("data",data)
+	return data
 
 def get_columns():
 	return [
