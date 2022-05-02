@@ -16,7 +16,15 @@ frappe.query_reports["Sales Cost Report modified"] = {
 		"label": __("Sales Order"),
 		"fieldtype": "Link",
 		"options": "Sales Order",
-		"reqd": 1
+		"reqd": 1,
+		"get_query": function() {
+			return {
+			"doctype": "Sales Order",
+			"filters": {
+			"docstatus": 1,
+			}
+			}
+			}
 	}
 		
 
