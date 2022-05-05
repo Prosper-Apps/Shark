@@ -104,7 +104,7 @@ def execute(filters=None):
 					input_cost_for_raw_material="Yes"
 					total_rm_qty=qty*stock_qty
 					data.append([default_bom_available,bom,sales_item_code,item_name,
-					qty,stock_qty,total_rm_qty,stock_uom,round(float(stock_valuation_price),2),
+					qty,round(float(stock_qty),4),round(float(total_rm_qty),4),stock_uom,round(float(stock_valuation_price),2),
 					 round(float(last_purchase_rate),2),purchase_uom,
 					 round(float(conversion_factor),2), round(float(valuation_cost_in_stock_uom),2),
 					 round(float(total_item_cost),2),input_cost_for_raw_material])
