@@ -213,7 +213,7 @@ def execute(filters=None):
 						item_cost_base_on_last_purchase ,stock_valuation_price,item_cost_based_on_valuation_rate
 						,max_purchase , avg_purchase,min_purchase,number_of_purchase])
 			else:
-				frappe.throw("Please define Conversion Factor for purchase uom "+'"'+purchase_uom+'"'+ " of this "+'"'+item_code+'"'+" in Item Master and run this report again")
+				frappe.throw("Please define Conversion Factor for purchase uom  in Item Master and run this report again")
 	get_total = get_report_total_row()
 	#print "get_total------------",get_total
 	if get_total[0].add_total_row == 0:
