@@ -42,7 +42,7 @@ def execute(filters=None):
 		if bom is None:
 			default_bom_available="No"
 			data.append([default_bom_available,bom,sales_item_code,
-			"","","","",stock_uom,"","","","","","","","",""])
+			"","","","","","",stock_uom,"","","","","","",""])
 		#frappe.msgprint(" Item "+sales_item_code+" does not have default BOM")
 		if bom is not None:
 			bom_item = bom_details(company ,bom)
@@ -113,10 +113,10 @@ def execute(filters=None):
 					input_cost_for_raw_material="Yes"
 					total_rm_qty=qty*stock_qty
 					data.append([default_bom_available,bom,sales_item_code,item_name,
-					qty,stock_qty,total_rm_qty,stock_uom,round(float(stock_valuation_price),2),
+					qty,stock_qty,total_rm_qty,actual_qty,pending_po_qty,stock_uom,round(float(stock_valuation_price),2),
 					 round(float(last_purchase_rate),2),purchase_uom,
 					 round(float(conversion_factor),2), round(float(valuation_cost_in_stock_uom),2),
-					 round(float(total_item_cost),2),input_cost_for_raw_material,actual_qty,pending_po_qty])
+					 round(float(total_item_cost),2),input_cost_for_raw_material])
 	data=test(data)
 	
 	return columns, data
@@ -124,16 +124,16 @@ def execute(filters=None):
 def test(data):
 	array1=[]
 	for d in data:
-		if d[13]==0:
+		if d[15]==0:
 			if d[1] not in array1:
 				array1.append(d[1]) 
 	#print("array1",array1)
 	for a in array1:
 		for d in data:
 			if a==d[1]:
-				d[14]="No"
+				d[16]="No"
 			else:
-				d[14]="Yes"
+				d[16]="Yes"
 	print("data",data)
 	return data
 
@@ -146,6 +146,8 @@ def get_columns():
 	_("FG SO Qty") + "::110",
 	_("Qty in Stock UOM") + "::110",
 	_("Total RM Qty") + "::110",
+	_("Stock As On Date") + "::110",
+	_("Balance Qty") + "::110",
 	_("Stock UOM") + ":Link/UOM:110",
 	_("Valuation Rate in Stock UOM") + "::110",
 	_("Purchase Rate") + "::110",
@@ -153,9 +155,8 @@ def get_columns():
 	_("Conversion Factor Purchase UOM to Stock UOM") + "::110",
 	_("Purchase/Valuation Cost in Stock UOM") + "::130",
 	_("Total Item Cost") + "::110",
-	_("Inputs costs for all raw material available?") + "::130",
-	_("Stock As On Date") + "::110",
-	_("Balance Qty") + "::110"
+	_("Inputs costs for all raw material available?") + "::130"
+	
 	
 	
 	
@@ -208,7 +209,9 @@ def get_conversion_factore(item_code,purchase_uom):
     	
 	#print "item_code==============",item_code
 	conversion = frappe.db.sql("""select conversion_factor from `tabUOM Conversion Detail` where parent = %s and uom = %s """,(item_code,purchase_uom), as_dict=1)
-	
+	print("conversion",conversion[0]['conversion_factor'])
+	if conversion[0]['conversion_factor'] == 0.0:
+		frappe.throw("Please define Conversion Factor  of this "+'"'+item_code+'"'+" in Item Master and run this report again")
 	return conversion
 
 def get_stock_ledger_entry(item_code):
