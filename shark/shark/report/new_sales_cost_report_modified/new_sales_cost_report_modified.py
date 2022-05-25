@@ -58,6 +58,7 @@ def execute(filters=None):
 				stock_qty = bom_i.bi_qty
 				stock_ledger_entry = get_stock_ledger_entry(item_code)
 				item_details = get_item_details(item_code)
+				conversion_factor=0.0
 				actual_stock_qty=warehouse_qty_details(item_code,warehouse)
 				print("actual_stock_qty",actual_stock_qty)
 				if len(actual_stock_qty) == 0:
@@ -112,11 +113,14 @@ def execute(filters=None):
 					total_item_cost=valuation_cost_in_stock_uom*stock_qty
 					input_cost_for_raw_material="Yes"
 					total_rm_qty=qty*stock_qty
-					data.append([default_bom_available,bom,sales_item_code,item_name,
-					qty,stock_qty,total_rm_qty,actual_qty,pending_po_qty,stock_uom,round(float(stock_valuation_price),2),
-					 round(float(last_purchase_rate),2),purchase_uom,
-					 round(float(conversion_factor),2), round(float(valuation_cost_in_stock_uom),2),
-					 round(float(total_item_cost),2),input_cost_for_raw_material])
+					if conversion_factor != 0:
+						data.append([default_bom_available,bom,sales_item_code,item_name,
+						qty,stock_qty,total_rm_qty,actual_qty,pending_po_qty,stock_uom,round(float(stock_valuation_price),2),
+						round(float(last_purchase_rate),2),purchase_uom,
+						round(float(conversion_factor),2), round(float(valuation_cost_in_stock_uom),2),
+						round(float(total_item_cost),2),input_cost_for_raw_material])
+					else:
+						frappe.throw("Please define Conversion Factor of this "+'"'+item_code+'"'+" in Item Master and run this report again")
 	data=test(data)
 	
 	return columns, data
@@ -209,9 +213,8 @@ def get_conversion_factore(item_code,purchase_uom):
     	
 	#print "item_code==============",item_code
 	conversion = frappe.db.sql("""select conversion_factor from `tabUOM Conversion Detail` where parent = %s and uom = %s """,(item_code,purchase_uom), as_dict=1)
-	print("conversion",conversion[0]['conversion_factor'])
-	if conversion[0]['conversion_factor'] == 0.0:
-		frappe.throw("Please define Conversion Factor  of this "+'"'+item_code+'"'+" in Item Master and run this report again")
+	#print("conversion",conversion[0]['conversion_factor'])
+	
 	return conversion
 
 def get_stock_ledger_entry(item_code):
