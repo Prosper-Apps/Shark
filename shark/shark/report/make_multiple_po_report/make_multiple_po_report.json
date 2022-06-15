@@ -1,0 +1,33 @@
+{
+ "add_total_row": 0,
+ "creation": "2022-06-10 10:18:21.924712",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "idx": 0,
+ "is_standard": "Yes",
+ "modified": "2022-06-10 10:18:21.924712",
+ "modified_by": "Administrator",
+ "module": "shark",
+ "name": "Make Multiple PO Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Material Request",
+ "report_name": "Make Multiple PO Report",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Purchase Manager"
+  },
+  {
+   "role": "Stock Manager"
+  },
+  {
+   "role": "Stock User"
+  },
+  {
+   "role": "Purchase User"
+  }
+ ]
+}
