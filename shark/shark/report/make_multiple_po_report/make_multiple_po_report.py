@@ -54,7 +54,7 @@ def execute(filters=None):
 				draft_qty=draft_qty[0]['draft_qty']
 
 			balance_qty=mr_data['qty']-(ordered_qty+draft_qty)
-			data.append([mr_data['name'],mr_data['item_code'],mr_data['schedule_date'].strftime("%d-%m-%Y"),
+			data.append([mr_data['name'],mr_data['item_code'],mr_data['schedule_date'],
 			mr_data['qty'],ordered_qty,draft_qty,balance_qty,
 			mr_data['stock_uom'],supplier[0]['default_supplier'],
 			])
@@ -85,7 +85,7 @@ def execute(filters=None):
 
 			balance_qty=mr_data['qty']-(ordered_qty+draft_qty)
 			if supplier[0]['default_supplier'] is None:
-				data.append([mr_data['name'],mr_data['item_code'],mr_data['schedule_date'].strftime("%d-%m-%Y"),
+				data.append([mr_data['name'],mr_data['item_code'],mr_data['schedule_date'],
 			mr_data['qty'],ordered_qty,draft_qty,balance_qty,
 			mr_data['stock_uom'],supplier[0]['default_supplier'],
 			])
