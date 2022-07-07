@@ -55,7 +55,7 @@ def get_conditions(filters):
 		conditions += 'and  tmri.project= %s'  % frappe.db.escape(filters.get("project"), percent=False)
 
 	if filters.get("bom_no"):
-		conditions +='and tmri.up_bom_no = %s' % frappe.db.escape(filters.get("bom_no"), percent=False)
+		conditions +='and tmri.pch_bom_no = %s' % frappe.db.escape(filters.get("bom_no"), percent=False)
 
 	print("condition",conditions)
 	return conditions
