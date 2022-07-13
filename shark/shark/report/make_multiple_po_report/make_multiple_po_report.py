@@ -55,7 +55,7 @@ def execute(filters=None):
 
 			balance_qty=mr_data['qty']-(ordered_qty+draft_qty)
 			data.append([mr_data['name'],mr_data['item_code'],mr_data['schedule_date'],
-			mr_data['qty'],ordered_qty,draft_qty,balance_qty,
+			mr_data['qty'],mr_data['warehouse'],mr_data['item_group'],ordered_qty,draft_qty,balance_qty,
 			mr_data['stock_uom'],supplier[0]['default_supplier'],
 			])
 			print("data",data)
@@ -86,7 +86,7 @@ def execute(filters=None):
 			balance_qty=mr_data['qty']-(ordered_qty+draft_qty)
 			if supplier[0]['default_supplier'] is None:
 				data.append([mr_data['name'],mr_data['item_code'],mr_data['schedule_date'],
-			mr_data['qty'],ordered_qty,draft_qty,balance_qty,
+			mr_data['qty'],mr_data['warehouse'],mr_data['item_group'],ordered_qty,draft_qty,balance_qty,
 			mr_data['stock_uom'],supplier[0]['default_supplier'],
 			])
 			print("data======",data)
@@ -132,6 +132,7 @@ def create_selected_row_po(checked_rows,supplier):
 		"item_code":items_details['item_code'],
 		"qty":balance_qty,
 		"stock_uom": items_details['stock_uom'],
+		"warehouse":items_details['warehouse'],
 		"material_request":items_details['material_request_no'],
 		"schedule_date":items_details['schedule_date'],
 		"doctype": "Purchase Order Item"
@@ -173,7 +174,7 @@ def create_po(material_request):
 	filtered_list = list(filter(None, test_list))
 	print("filtered_list",filtered_list)
 	for supplier_details in filtered_list:
-		items = frappe.db.sql("""select mr.name,mri.item_code,mri.qty,mri.schedule_date,mr.schedule_date as reqd_by_date,mri.stock_uom,id.default_supplier from `tabMaterial Request` as mr inner join 
+		items = frappe.db.sql("""select mr.name,mri.item_code,mri.qty,mri.schedule_date,mri.warehouse,mr.schedule_date as reqd_by_date,mri.stock_uom,id.default_supplier from `tabMaterial Request` as mr inner join 
 	`tabMaterial Request Item` as mri on mr.name=mri.parent and 
 	mr.name='"""+material_request+"""' inner join `tabItem Default` id on id.parent=mri.item_code 
 	and id.default_supplier='"""+supplier_details+"""' """, as_dict=1)
@@ -211,6 +212,7 @@ def create_po(material_request):
 			"item_code":items_details['item_code'],
 			"qty":balance_qty,
 			"stock_uom": items_details['stock_uom'],
+			"warehouse":items_details['warehouse'],
 			"material_request":material_request,
 			"schedule_date":items_details['schedule_date'],
 			"doctype": "Purchase Order Item"
@@ -232,7 +234,7 @@ def create_po(material_request):
 			
 
 def fetching_mr_details(material_request):
-	t_data = frappe.db.sql("""select mr.name,mri.item_code,mri.schedule_date,mri.qty,mri.stock_uom from `tabMaterial Request` as mr inner join `tabMaterial Request Item` as mri where mr.name=mri.parent and mr.name='"""+material_request+"""'""", as_dict=1)
+	t_data = frappe.db.sql("""select mr.name,mri.item_code,mri.schedule_date,mri.qty,mri.stock_uom,mri.warehouse,mri.item_group from `tabMaterial Request` as mr inner join `tabMaterial Request Item` as mri where mr.name=mri.parent and mr.name='"""+material_request+"""'""", as_dict=1)
 
 	return t_data
 
@@ -243,6 +245,8 @@ def get_columns():
 		_("Item Code")+":Link/Item:200",
 		_("Schedule Date")+"::200",
 		_("Original Qty")+"::100",
+		_("Warehouse")+"::200",
+		_("Item Group")+"::200",
 		_("Ordered Qty")+"::100",
 		_("Draft Po Qty")+"::100",
 		_("Balance Qty")+"::100",
