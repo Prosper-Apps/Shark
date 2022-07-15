@@ -99,9 +99,11 @@ def execute(filters=None):
 def create_selected_row_po(checked_rows,supplier):
 	#print("filters",type(filters))
 	items=json.loads(checked_rows)
+	print("items",items)
 	outerJson_po = {
 		"doctype": "Purchase Order",
 		"supplier": supplier,
+		"material_request":items[0]['material_request_no'],
 		"items": []
 		}
 	for items_details in items:
@@ -183,6 +185,7 @@ def create_po(material_request):
 		"doctype": "Purchase Order",
 		"supplier": supplier_details,
 		"schedule_date":items[0]['reqd_by_date'],
+		"material_request":material_request,
 		"items": []
 		}
 		for items_details in items:
