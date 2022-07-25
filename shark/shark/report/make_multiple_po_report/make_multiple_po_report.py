@@ -129,10 +129,13 @@ def create_selected_row_po(checked_rows,supplier):
 
 		balance_qty=items_details['original_qty']-(ordered_qty+draft_qty)
 		print("balance qty----",balance_qty)
+		last_purchase_rate = frappe.db.sql("""select last_purchase_rate from `tabItem` where item_code='"""+items_details['item_code']+"""'""", as_dict=1)
+		print("last_purchase_rate",last_purchase_rate)		
 		if balance_qty!=0:
 			innerJson = {
 		"item_code":items_details['item_code'],
 		"qty":balance_qty,
+		"rate":last_purchase_rate[0]['last_purchase_rate'],
 		"stock_uom": items_details['stock_uom'],
 		"warehouse":items_details['warehouse'],
 		"material_request":items_details['material_request_no'],
@@ -210,10 +213,13 @@ def create_po(material_request):
 
 			balance_qty=items_details['qty']-(ordered_qty+draft_qty)
 			print("balance qty----",balance_qty)
+			last_purchase_rate = frappe.db.sql("""select last_purchase_rate from `tabItem` where item_code='"""+items_details['item_code']+"""'""", as_dict=1)
+			print("last_purchase_rate",last_purchase_rate)
 			if balance_qty!=0:
 				innerJson = {
 			"item_code":items_details['item_code'],
 			"qty":balance_qty,
+			"rate":last_purchase_rate[0]['last_purchase_rate'],
 			"stock_uom": items_details['stock_uom'],
 			"warehouse":items_details['warehouse'],
 			"material_request":material_request,
