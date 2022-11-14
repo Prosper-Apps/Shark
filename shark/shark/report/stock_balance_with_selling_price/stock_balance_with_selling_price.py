@@ -95,30 +95,20 @@ def execute(filters=None):
 	print("data",data)
 	for i in data:
 		print("item_code",i['item_code'])
-		last_selling_price = frappe.db.sql("""select sli.item_code ,sli.rate,sli.creation from `tabSales Invoice Item` as sli inner join `tabSales Invoice` as si on
-si.name=sli.parent where sli.item_code='"""+i['item_code']+"""'
- and si.docstatus!=1 and sli.modified=(SELECT MAX(modified) FROM `tabSales Invoice Item` where
-item_code='"""+i['item_code']+"""')""", as_dict=1)
-		print("last_selling_price",last_selling_price)
-		if last_selling_price==[]:
-			print("if")
-			last_selling_price = frappe.db.sql("""select sli.item_code ,sli.rate,sli.creation from 
-			`tabSales Order Item` as sli inner join `tabSales Order` as si on
-si.name=sli.parent where sli.item_code='"""+i['item_code']+"""'
- and si.docstatus!=1 and sli.modified=(SELECT MAX(modified) FROM `tabSales Order Item` where
-item_code='"""+i['item_code']+"""')""", as_dict=1)
-			print("last_selling_price",last_selling_price)
-			if last_selling_price==[]:
-				i['reorder_level']=0
-			else:
-				i['reorder_level']=last_selling_price[0]['rate']
-				i['reorder_qty']=i['bal_qty']*last_selling_price[0]['rate']
-
-
+		item_code=i['item_code']
+		if ":" in item_code:
+			item_code=item_code.split(":")
+			item_code=item_code[0]
 		else:
-			print("else")
-			i['reorder_level']=last_selling_price[0]['rate']
-			i['reorder_qty']=i['bal_qty']*last_selling_price[0]['rate']
+			item_code=item_code
+		item_name=i['item_name']	
+		last_selling_price = frappe.db.sql("""select pch_item_selling_price from `tabItem` 
+		where item_code=%(item_code)s and item_name=%(item_name)s """,{'item_code':item_code,'item_name':item_name},
+		as_dict=1)
+		print("last_selling_price",last_selling_price)
+
+		i['reorder_level']=last_selling_price[0]['pch_item_selling_price']
+		i['reorder_qty']=i['bal_qty']*last_selling_price[0]['pch_item_selling_price']
 
 	add_additional_uom_columns(columns, data, include_uom, conversion_factors)
 	return columns, data
