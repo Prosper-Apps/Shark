@@ -32,17 +32,18 @@ def execute(filters=None):
 	print("not_supplier",not_supplier)
 	if not_supplier!=1:	
 		for mr_data in mr_details:
-			supplier = frappe.db.sql("""select default_supplier from `tabItem Default` where parent='"""+mr_data['item_code']+"""'""", as_dict=1)
+			item_code=mr_data['item_code']
+			supplier = frappe.db.sql("""select default_supplier from `tabItem Default` where parent=%(item_code)s""",{'item_code':item_code}, as_dict=1)
 			print(supplier)
 			ordered_qty=frappe.db.sql("""select sum(poi.qty) as ordered_qty from  `tabPurchase Order` po,`tabPurchase Order Item` poi 
 			where po.name=poi.parent and po.docstatus=1 and 
-			poi.item_code='"""+mr_data['item_code']+"""' and
-			poi.material_request='"""+mr_data['name']+"""'""", as_dict=1)
+			poi.item_code=%(item_code)s and
+			poi.material_request='"""+mr_data['name']+"""'""",{'item_code':item_code}, as_dict=1)
 			print("ordered_qty[0]['ordered_qty']",ordered_qty[0]['ordered_qty'])
 			draft_qty=frappe.db.sql("""select sum(poi.qty) as draft_qty from  `tabPurchase Order` po,`tabPurchase Order Item` poi 
 			where po.name=poi.parent and po.docstatus=0 and 
-			poi.item_code='"""+mr_data['item_code']+"""' and
-			poi.material_request='"""+mr_data['name']+"""'""", as_dict=1)
+			poi.item_code=%(item_code)s and
+			poi.material_request='"""+mr_data['name']+"""'""",{'item_code':item_code}, as_dict=1)
 			print("draft_qty[0]['draft_qty']",draft_qty[0]['draft_qty'])
 			if ordered_qty[0]['ordered_qty'] is None:
 				ordered_qty=0
@@ -62,17 +63,18 @@ def execute(filters=None):
 	
 	if not_supplier==1:
 		for mr_data in mr_details:
-			supplier = frappe.db.sql("""select default_supplier from `tabItem Default` where parent='"""+mr_data['item_code']+"""'""", as_dict=1)
+			item_code=mr_data['item_code']
+			supplier = frappe.db.sql("""select default_supplier from `tabItem Default` where parent=%(item_code)s""",{'item_code':item_code}, as_dict=1)
 			print(supplier)
 			ordered_qty=frappe.db.sql("""select sum(poi.qty) as ordered_qty from  `tabPurchase Order` po,`tabPurchase Order Item` poi 
 			where po.name=poi.parent and po.docstatus=1 and 
-			poi.item_code='"""+mr_data['item_code']+"""' and
-			poi.material_request='"""+mr_data['name']+"""'""", as_dict=1)
+			poi.item_code=%(item_code)s and
+			poi.material_request='"""+mr_data['name']+"""'""",{'item_code':item_code}, as_dict=1)
 			print("ordered_qty[0]['ordered_qty']",ordered_qty[0]['ordered_qty'])
 			draft_qty=frappe.db.sql("""select sum(poi.qty) as draft_qty from  `tabPurchase Order` po,`tabPurchase Order Item` poi 
 			where po.name=poi.parent and po.docstatus=0 and 
-			poi.item_code='"""+mr_data['item_code']+"""' and
-			poi.material_request='"""+mr_data['name']+"""'""", as_dict=1)
+			poi.item_code=%(item_code)s and
+			poi.material_request='"""+mr_data['name']+"""'""",{'item_code':item_code}, as_dict=1)
 			print("draft_qty[0]['draft_qty']",draft_qty[0]['draft_qty'])
 			if ordered_qty[0]['ordered_qty'] is None:
 				ordered_qty=0
@@ -108,15 +110,16 @@ def create_selected_row_po(checked_rows,supplier):
 		}
 	for items_details in items:
 		print("items_details",items_details)
+		item_code=items_details['item_code']
 		ordered_qty=frappe.db.sql("""select sum(poi.qty) as ordered_qty from  `tabPurchase Order` po,`tabPurchase Order Item` poi 
 		where po.name=poi.parent and po.docstatus=1 and 
-		poi.item_code='"""+items_details['item_code']+"""' and
-		poi.material_request='"""+items_details['material_request_no']+"""'""", as_dict=1)
+		poi.item_code=%(item_code)s and
+		poi.material_request='"""+items_details['material_request_no']+"""'""",{'item_code':item_code}, as_dict=1)
 		print("ordered_qty[0]['ordered_qty']",ordered_qty[0]['ordered_qty'])
 		draft_qty=frappe.db.sql("""select sum(poi.qty) as draft_qty from  `tabPurchase Order` po,`tabPurchase Order Item` poi 
 		where po.name=poi.parent and po.docstatus=0 and 
-		poi.item_code='"""+items_details['item_code']+"""' and
-		poi.material_request='"""+items_details['material_request_no']+"""'""", as_dict=1)
+		poi.item_code=%(item_code)s and
+		poi.material_request='"""+items_details['material_request_no']+"""'""",{'item_code':item_code}, as_dict=1)
 		print("draft_qty[0]['draft_qty']",draft_qty[0]['draft_qty'])
 		if ordered_qty[0]['ordered_qty'] is None:
 			ordered_qty=0
@@ -129,7 +132,7 @@ def create_selected_row_po(checked_rows,supplier):
 
 		balance_qty=items_details['original_qty']-(ordered_qty+draft_qty)
 		print("balance qty----",balance_qty)
-		last_purchase_rate = frappe.db.sql("""select last_purchase_rate from `tabItem` where item_code='"""+items_details['item_code']+"""'""", as_dict=1)
+		last_purchase_rate = frappe.db.sql("""select last_purchase_rate from `tabItem` where item_code=%(item_code)s""",{'item_code':item_code}, as_dict=1)
 		print("last_purchase_rate",last_purchase_rate)		
 		if balance_qty!=0:
 			innerJson = {
@@ -170,7 +173,8 @@ def create_po(material_request):
 	draft_qty=0	
 	balance_qty=0		
 	for mr_data in mr_details:
-		supplier = frappe.db.sql("""select default_supplier from `tabItem Default` where parent='"""+mr_data['item_code']+"""'""", as_dict=1)
+		item_code=mr_data['item_code']
+		supplier = frappe.db.sql("""select default_supplier from `tabItem Default` where parent=%(item_code)s""",{'item_code':item_code}, as_dict=1)
 		print(supplier)
 		supplier_list.append(supplier[0]['default_supplier'])
 		
@@ -192,15 +196,16 @@ def create_po(material_request):
 		"items": []
 		}
 		for items_details in items:
+			item_code=items_details['item_code']
 			ordered_qty=frappe.db.sql("""select sum(poi.qty) as ordered_qty from  `tabPurchase Order` po,`tabPurchase Order Item` poi 
-		where po.name=poi.parent and po.docstatus=1 and 
-		poi.item_code='"""+items_details['item_code']+"""' and
-		poi.material_request='"""+material_request+"""'""", as_dict=1)
+			where po.name=poi.parent and po.docstatus=1 and 
+			poi.item_code=%(item_code)s and
+			poi.material_request='"""+material_request+"""'""",{'item_code':item_code}, as_dict=1)
 			print("ordered_qty[0]['ordered_qty']",ordered_qty[0]['ordered_qty'])
 			draft_qty=frappe.db.sql("""select sum(poi.qty) as draft_qty from  `tabPurchase Order` po,`tabPurchase Order Item` poi 
 			where po.name=poi.parent and po.docstatus=0 and 
-			poi.item_code='"""+items_details['item_code']+"""' and
-			poi.material_request='"""+material_request+"""'""", as_dict=1)
+			poi.item_code=%(item_code)s and
+			poi.material_request='"""+material_request+"""'""",{'item_code':item_code}, as_dict=1)
 			print("draft_qty[0]['draft_qty']",draft_qty[0]['draft_qty'])
 			if ordered_qty[0]['ordered_qty'] is None:
 				ordered_qty=0
@@ -213,7 +218,7 @@ def create_po(material_request):
 
 			balance_qty=items_details['qty']-(ordered_qty+draft_qty)
 			print("balance qty----",balance_qty)
-			last_purchase_rate = frappe.db.sql("""select last_purchase_rate from `tabItem` where item_code='"""+items_details['item_code']+"""'""", as_dict=1)
+			last_purchase_rate = frappe.db.sql("""select last_purchase_rate from `tabItem` where item_code=%(item_code)s""",{'item_code':item_code},as_dict=1)
 			print("last_purchase_rate",last_purchase_rate)
 			if balance_qty!=0:
 				innerJson = {
