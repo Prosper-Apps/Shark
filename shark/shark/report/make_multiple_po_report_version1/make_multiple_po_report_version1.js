@@ -80,7 +80,7 @@ frappe.query_reports["Make Multiple PO Report Version1"] = {
 
 function create_po(material_request) {
     frappe.call({
-        method: 'aepl.aepl.report.make_multiple_po_report.make_multiple_po_report.create_po',
+        method: 'shark.shark.report.make_multiple_po_report_version1.make_multiple_po_report_version1.create_po',
         args:{
 			material_request:material_request
 		},
@@ -95,7 +95,7 @@ function create_po(material_request) {
 function get_rows_data(checked_rows,supplier) {
     console.log("---------------")
     frappe.call({
-        method: 'aepl.aepl.report.make_multiple_po_report.make_multiple_po_report.create_selected_row_po',
+        method: 'shark.shark.report.make_multiple_po_report_version1.make_multiple_po_report_version1.create_selected_row_po',
 		args: {
 			checked_rows: checked_rows,
 			supplier:supplier
