@@ -105,7 +105,6 @@ def create_selected_row_po(checked_rows,supplier):
 	outerJson_po = {
 		"doctype": "Purchase Order",
 		"supplier": supplier,
-		"company":"Merit Systems",
 		"material_request":items[0]['material_request_no'],
 		"items": []
 		}
@@ -193,7 +192,6 @@ def create_po(material_request):
 		outerJson_po = {
 		"doctype": "Purchase Order",
 		"supplier": supplier_details,
-		"company":"Merit Systems",
 		"schedule_date":items[0]['reqd_by_date'],
 		"material_request":material_request,
 		"items": []
