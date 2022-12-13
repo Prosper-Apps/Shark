@@ -181,3 +181,23 @@ def get_stock_uom(item_code):
 def update_boq_lite_item(item_code,name,is_raw_material):
 	records = frappe.db.sql("""update `tabBOQ Light Item` set is_raw_material = '"""+ str(is_raw_material)+"""' where parent=%s and item_code=%s""", (name, item_code))
 	frappe.db.commit()
+
+@frappe.whitelist()
+def get_sales_order_item_list(name):
+	print("name",name)
+	get_sales_order_item =frappe.db.sql("""select soi.item_code,soi.qty from `tabSales Order` so,
+	`tabSales Order Item` soi where so.name=soi.parent and so.name='"""+name+"""' """, as_dict=1)
+	print("get_sales_order_item_list",get_sales_order_item)
+	return get_sales_order_item
+
+@frappe.whitelist()
+def get_qc_list(sales_order,item_code):
+	print("item_code",item_code)
+	get_qc_qty =frappe.db.sql("""select tqad.name,tqad.sales_order,
+	tqadi.item_code,sum(tqadi.qc_qty_cleared) as qc_passed
+	 from `tabQuality Assurance Document Items` tqadi,
+	`tabQuality Assurance Document` tqad 
+	where tqad.name=tqadi.parent and 
+	tqad.sales_order='"""+sales_order+"""' and tqadi.item_code='"""+item_code+"""' """, as_dict=1)
+	print("get_qc_qty............",get_qc_qty)
+	return get_qc_qty
