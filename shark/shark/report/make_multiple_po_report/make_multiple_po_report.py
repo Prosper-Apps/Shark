@@ -133,7 +133,11 @@ def create_selected_row_po(checked_rows,supplier):
 		balance_qty=items_details['original_qty']-(ordered_qty+draft_qty)
 		print("balance qty----",balance_qty)
 		last_purchase_rate = frappe.db.sql("""select last_purchase_rate from `tabItem` where item_code=%(item_code)s""",{'item_code':item_code}, as_dict=1)
-		print("last_purchase_rate",last_purchase_rate)		
+		print("last_purchase_rate",last_purchase_rate)	
+		material_request_item = frappe.db.sql("""select name from `tabMaterial Request Item` 
+		where item_code=%(item_code)s and
+		parent='"""+items_details['material_request_no']+"""'""",{'item_code':item_code}, as_dict=1)
+		print("material_request_item--",material_request_item)		
 		if balance_qty!=0:
 			innerJson = {
 		"item_code":items_details['item_code'],
@@ -142,6 +146,7 @@ def create_selected_row_po(checked_rows,supplier):
 		"stock_uom": items_details['stock_uom'],
 		"warehouse":items_details['warehouse'],
 		"material_request":items_details['material_request_no'],
+		"material_request_item":material_request_item[0]['name'],
 		"schedule_date":items_details['schedule_date'],
 		"doctype": "Purchase Order Item"
 		}
@@ -183,7 +188,8 @@ def create_po(material_request):
 	filtered_list = list(filter(None, test_list))
 	print("filtered_list",filtered_list)
 	for supplier_details in filtered_list:
-		items = frappe.db.sql("""select mr.name,mri.item_code,mri.qty,mri.schedule_date,mri.warehouse,mr.schedule_date as reqd_by_date,mri.stock_uom,id.default_supplier from `tabMaterial Request` as mr inner join 
+		items = frappe.db.sql("""select mr.name,mri.item_code,mri.qty,mri.schedule_date,
+		mri.name as material_request_item,mri.warehouse,mr.schedule_date as reqd_by_date,mri.stock_uom,id.default_supplier from `tabMaterial Request` as mr inner join 
 	`tabMaterial Request Item` as mri on mr.name=mri.parent and 
 	mr.name='"""+material_request+"""' inner join `tabItem Default` id on id.parent=mri.item_code 
 	and id.default_supplier='"""+supplier_details+"""' """, as_dict=1)
@@ -197,6 +203,8 @@ def create_po(material_request):
 		}
 		for items_details in items:
 			item_code=items_details['item_code']
+			material_request_item=items_details['material_request_item']
+			print("material_request_item",material_request_item)
 			ordered_qty=frappe.db.sql("""select sum(poi.qty) as ordered_qty from  `tabPurchase Order` po,`tabPurchase Order Item` poi 
 			where po.name=poi.parent and po.docstatus=1 and 
 			poi.item_code=%(item_code)s and
@@ -228,6 +236,7 @@ def create_po(material_request):
 			"stock_uom": items_details['stock_uom'],
 			"warehouse":items_details['warehouse'],
 			"material_request":material_request,
+			"material_request_item":items_details['material_request_item'],
 			"schedule_date":items_details['schedule_date'],
 			"doctype": "Purchase Order Item"
 			}
