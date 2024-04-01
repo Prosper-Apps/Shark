@@ -134,7 +134,7 @@ def create_selected_row_po(checked_rows,supplier):
 		print("balance qty----",balance_qty)
 		last_purchase_rate = frappe.db.sql("""select last_purchase_rate from `tabItem` where item_code=%(item_code)s""",{'item_code':item_code}, as_dict=1)
 		print("last_purchase_rate",last_purchase_rate)	
-		material_request_item = frappe.db.sql("""select name from `tabMaterial Request Item` 
+		material_request_item = frappe.db.sql("""select name,project from `tabMaterial Request Item` 
 		where item_code=%(item_code)s and
 		parent='"""+items_details['material_request_no']+"""'""",{'item_code':item_code}, as_dict=1)
 		print("material_request_item--",material_request_item)		
@@ -147,6 +147,7 @@ def create_selected_row_po(checked_rows,supplier):
 		"warehouse":items_details['warehouse'],
 		"material_request":items_details['material_request_no'],
 		"material_request_item":material_request_item[0]['name'],
+		"project":material_request_item[0]['project'],
 		"schedule_date":items_details['schedule_date'],
 		"doctype": "Purchase Order Item"
 		}
@@ -189,7 +190,7 @@ def create_po(material_request):
 	print("filtered_list",filtered_list)
 	for supplier_details in filtered_list:
 		items = frappe.db.sql("""select mr.name,mri.item_code,mri.qty,mri.schedule_date,
-		mri.name as material_request_item,mri.warehouse,mr.schedule_date as reqd_by_date,mri.stock_uom,id.default_supplier from `tabMaterial Request` as mr inner join 
+		mri.name as material_request_item,mri.project,mri.warehouse,mr.schedule_date as reqd_by_date,mri.stock_uom,id.default_supplier from `tabMaterial Request` as mr inner join 
 	`tabMaterial Request Item` as mri on mr.name=mri.parent and 
 	mr.name='"""+material_request+"""' inner join `tabItem Default` id on id.parent=mri.item_code 
 	and id.default_supplier='"""+supplier_details+"""' """, as_dict=1)
@@ -237,6 +238,7 @@ def create_po(material_request):
 			"warehouse":items_details['warehouse'],
 			"material_request":material_request,
 			"material_request_item":items_details['material_request_item'],
+			"project":items_details['project'],
 			"schedule_date":items_details['schedule_date'],
 			"doctype": "Purchase Order Item"
 			}
