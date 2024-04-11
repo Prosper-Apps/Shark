@@ -102,7 +102,7 @@ scheduler_events = {
  	],
  	"weekly": [
  		"shark.tasks.weekly"
- 	]
+ 	],
  	"monthly": [
  		"shark.tasks.monthly"
  	]
