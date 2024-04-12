@@ -25,4 +25,5 @@ def daily():
             print("po_name",po_name)
             doc=frappe.get_doc("Purchase Order",po_name)
             doc.cancel()
+            frappe.db.commit()
             print("cancelled succesfully")
