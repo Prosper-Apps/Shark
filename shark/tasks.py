@@ -1,5 +1,3 @@
-from _future_ import unicode_literals
-from _future_ import division
 from pydoc import doc
 import frappe
 from frappe import _, msgprint
