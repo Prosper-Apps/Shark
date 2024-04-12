@@ -16,7 +16,7 @@ def all():
 
 def daily():
     print("Hel000>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-    po_details = frappe.db.sql("""select name from tabPurchase Order where status="To Receive and Bill" AND schedule_date < DATE_SUB(CURDATE(), INTERVAL 30 DAY) """ , as_dict=1)
+    po_details = frappe.db.sql("""select name from `tabPurchase Order` where status="To Receive and Bill" AND schedule_date < DATE_SUB(CURDATE(), INTERVAL 30 DAY) """ , as_dict=1)
     print("po_data",po_details)
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Hello Im created")
     if po_details!=[]:
