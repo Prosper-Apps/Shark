@@ -24,6 +24,6 @@ def daily():
             po_name=po_data['name']
             print("po_name",po_name)
             doc=frappe.get_doc("Purchase Order",po_name)
-            doc.cancel()
+            frappe.db.set_value("Purchase Order", po_name, "status", "Closed")
             frappe.db.commit()
-            print("cancelled succesfully")
+            print("Closed succesfully")
