@@ -89,7 +89,7 @@ app_license = "MIT"
 
 # Scheduled Tasks
 # ---------------
-
+#commented
 #scheduler_events = {
 #	"all": [
 #		"shark.tasks.all"
